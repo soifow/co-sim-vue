@@ -96,10 +96,13 @@ module.exports = {
       //       '/swan-hosting': ''  //默认所有请求都加了jeecg-boot前缀，需要去掉
       //     }
       //   },
-      '/co-*': {
-        target: 'http://100.10.10.200:9001',   //'http://100.10.10.219:19001', //请求本地 需要swan-hosting后台项目
-        ws: false,
-        changeOrigin: true
+      '/co-sim': {
+        target: 'http://100.10.10.252:7005',   //'http://100.10.10.219:19001', //请求本地 需要swan-hosting后台项目
+        // ws: false,
+        changeOrigin: true,
+        pathRewrite: {
+          '^/co-sim': ''
+        }
       },
     }
   },
