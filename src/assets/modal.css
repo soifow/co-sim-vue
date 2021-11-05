@@ -1,0 +1,21 @@
+/*定义css使用的全局变量*/
+:root {
+  /*弹窗内容体相关*/
+  --modalBodyPaddingTop: 0px;
+
+  /*弹窗标签页相关*/
+  --modalTabMarginBottom: 4px;
+
+  /*弹窗分割线相关*/
+  --modalDividerMarginTop: 4px;
+  --modalDividerMarginBottom: 4px;
+
+  /*弹窗中输入框相关*/
+  --modalInputHeight: 32px;
+  --modalInputMarginTop: 3px;
+  --modalInputAddonMarginTop: -2px;
+  --modalInputErrMsgTop: 11px;
+  --modalInputErrMsgLeft: 10px;
+}
+
+
