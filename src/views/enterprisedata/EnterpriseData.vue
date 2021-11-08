@@ -83,6 +83,9 @@
         </a-table>
       </a-col>
     </a-row>
+
+    <insert-point-modal ref="insertPointModal" />
+
   </div>
 </template>
 
@@ -92,12 +95,14 @@
   import { mapGetters } from 'vuex'
   import { removePropertyOfNull } from "@/utils/util";
   import moment from "dayjs";
+  import InsertPointModal from "@/views/enterprisedata/SubModal/InsertPointModal";
 
   export default {
     description: '这是企业数据页面',
-    name: "EnterPriseData",     // 企业数据页面
+    name: "EnterpriseData",     // 企业数据页面
     mixins: [ListMixin],
     components: {
+      InsertPointModal,
 
     },
     data() {
@@ -356,7 +361,7 @@
         // this.$refs.accessBusWindow.open(record)
       },
       showPointInfoModal(record) {
-        // this.$refs.calcDataWindow.open(record)
+        this.$refs.insertPointModal.open(record)
       },
       showNodeInfoModal(record) {
         // this.$refs.calcResultWindow.open(record)

@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import EnterPriseDataPage from '@/views/enterprisedata/EnterPriseData'
+import EnterpriseDataPage from '@/views/enterprisedata/EnterpriseData'
 
 Vue.use(VueRouter)
 
@@ -8,7 +8,7 @@ const routes = [
   {
     path: '/',
     name: 'MainPage',
-    component: EnterPriseDataPage,
+    component: EnterpriseDataPage,
   },
   {
     path: '/about',
