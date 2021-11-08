@@ -86,6 +86,7 @@
 
     <create-enterprise-data-modal ref="createEnterpriseDataModal"
                                   @addAnData="userAddAnEnterpriseData" />
+    <editor-text-modal ref="editorTextModal" />
     <insert-point-modal ref="insertPointModal" />
     <other-data-files-modal ref="otherDataFilesModal" />
 
@@ -100,6 +101,7 @@
   import moment from "dayjs";
 
   import CreateEnterpriseDataModal from "@/views/enterprisedata/SubModal/CreateEnterpriseDataModal";
+  import EditorTextModal from "@/views/common/EditorTextModal";
   import InsertPointModal from "@/views/enterprisedata/SubModal/InsertPointModal";
   import OtherDataFilesModal from "@/views/enterprisedata/SubModal/OtherDataFilesModal";
 
@@ -109,6 +111,7 @@
     mixins: [ListMixin],
     components: {
       CreateEnterpriseDataModal,
+      EditorTextModal,
       InsertPointModal,
       OtherDataFilesModal,
     },
@@ -366,7 +369,7 @@
         this.$refs.createEnterpriseDataModal.open(record)
       },
       showFileTextModal(record) {
-        // this.$refs.accessBusWindow.open(record)
+        this.$refs.editorTextModal.open(record)
       },
       showPointInfoModal(record) {
         this.$refs.insertPointModal.open(record)
