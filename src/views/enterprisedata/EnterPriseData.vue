@@ -55,11 +55,11 @@
           </template>
 
           <template slot="otherDataFile" slot-scope="text, record, index">
-            <a @click="showOtherDataFileModal(record)">{{record.otherDataFile}}</a>
+            <a @click="showOtherDataFileModal(record)">共{{record.otherDataFile}}个文件</a>
           </template>
 
           <template slot="resultFile" slot-scope="text, record, index">
-            <a @click="showResultFileModal(record)">{{record.resultFile}}</a>
+            <a @click="showResultFileModal(record)">共{{record.resultFile}}个文件</a>
           </template>
 
           <template slot="calculation" slot-scope="text, record, index">
@@ -68,7 +68,7 @@
           </template>
 
           <template slot="otherNetFile" slot-scope="text, record, index">
-            <a @click="showOtherNetFileModal(record)">{{record.otherNetFile}}</a>
+            <a @click="showOtherNetFileModal(record)">共{{record.otherNetFile}}个文件</a>
           </template>
 
 <!--          <template slot="requirement" slot-scope="text, record, index">-->
@@ -314,22 +314,22 @@
         let testData = [
           {
             'id': '0',
-            'fileName': '文件名1',
-            'baseCapacity': 120,
+            'name': '文件名1',
+            'sbase': 120,
             'enterprise': '企业名1',
-            'userName': '用户名1',
-            'taskType': 6,
-            'dataType': 1,
-            'dataTime': 1636338050734,
-            'plan': 2022,
-            'planDataType': 1,
-            'pointNum': 10,
-            'receiveTime': 1636338070321,
+            'user': '用户名1',
+            'tasktype': 6,
+            'eqtype': 1,
+            'opertime': 1636338050734,
+            'planyear': 2022,
+            'planmode': 1,
+            'intercount': 10,
+            'rcvtime': 1636338070321,
             'nodeNum': 24,
             'dataFileNo': '4001',
             'netFileName': '电网文件名1',
-            'calcState': 0,
-            'finishTime': 1636338081368,
+            'calstas': 0,
+            'endtime': 1636338081368,
             'otherDataFile': 2,
             'resultFile': 3,
             'otherNetFile': 5,
@@ -384,22 +384,22 @@
           response.forEach(resp => {
             let rowObj = {}     // 每行对应的数据结构
             rowObj['id'] = resp.id                        // 该行对应结果的唯一id（计算结果这类子弹窗请求所需要的数据）
-            rowObj['fileName'] = resp.fileName            // 文件名称
-            rowObj['baseCapacity'] = resp.baseCapacity         // 基准容量
+            rowObj['fileName'] = resp.name            // 文件名称
+            rowObj['baseCapacity'] = resp.sbase         // 基准容量
             rowObj['enterprise'] = resp.enterprise        // 所属企业
-            rowObj['userName'] = resp.userName            // 所属用户
-            rowObj['taskType'] = this.formatTaskTypeStr(resp.taskType)        // 任务类型
-            rowObj['dataType'] = resp.dataType          // 电网数据类型
-            rowObj['dataTime'] = this.formatTableTimeStr(resp.dataTime)      // 电网数据时间
-            rowObj['plan'] = resp.plan                  // 电网规划数据年
-            rowObj['planDataType'] = resp.planDataType              // 电网规划数据方式
-            rowObj['pointNum'] = resp.pointNum   // 接入点数
-            rowObj['receiveTime'] = this.formatTableTimeStr(resp.receiveTime, '未接收')       // 接收时间
+            rowObj['userName'] = resp.user            // 所属用户
+            rowObj['taskType'] = this.formatTaskTypeStr(resp.tasktype)        // 任务类型
+            rowObj['dataType'] = this.formatDataTypeStr(resp.eqtype)          // 电网数据类型
+            rowObj['dataTime'] = this.formatTableTimeStr(resp.opertime)      // 电网数据时间
+            rowObj['plan'] = resp.planyear                  // 电网规划数据年
+            rowObj['planDataType'] = this.formatPlanDataTypeStr(resp.planmode)    // 电网规划数据方式
+            rowObj['pointNum'] = resp.intercount   // 接入点数
+            rowObj['receiveTime'] = this.formatTableTimeStr(resp.rcvtime, '未接收')       // 接收时间
             rowObj['nodeNum'] = resp.nodeNum              // 节点数
             rowObj['dataFileNo'] = resp.dataFileNo           // 电网数据文件编号
             rowObj['netFileName'] = resp.netFileName       // 电网文件名称
-            rowObj['calcState'] = this.formatCalcStatusStr(resp.calcState)            // 计算状态
-            rowObj['finishTime'] = this.formatTableTimeStr(resp.finishTime, '未完成')   // 完成时间
+            rowObj['calcState'] = this.formatCalcStatusStr(resp.calstas)            // 计算状态
+            rowObj['finishTime'] = this.formatTableTimeStr(resp.endtime, '未完成')   // 完成时间
             rowObj['otherDataFile'] = resp.otherDataFile         // 其他数据文件
             rowObj['resultFile'] = resp.resultFile         // 计算结果文件
             rowObj['action'] = 'actionSlot'
@@ -419,6 +419,17 @@
 
         return defaultDesc
       },
+      // 主表格电网数据类型显示格式化
+      formatDataTypeStr(taskType) {
+        switch (taskType) {
+          case 0:
+            return '运行'
+          case 1:
+            return '规划'
+          default:
+            return taskType + ''
+        }
+      },
       // 主表格任务类型显示格式化
       formatTaskTypeStr(taskType) {
         switch (taskType) {
@@ -428,6 +439,19 @@
             return '短路电流计算'
           case 9:
             return '暂态故障仿真'
+          default:
+            return taskType + ''
+        }
+      },
+      // 主表格电网规划数据方式显示格式化
+      formatPlanDataTypeStr(taskType) {
+        switch (taskType) {
+          case 0:
+            return '大方式'
+          case 1:
+            return '小方式'
+          case 2:
+            return '其他方式'
           default:
             return taskType + ''
         }
