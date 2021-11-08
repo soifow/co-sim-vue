@@ -84,6 +84,8 @@
       </a-col>
     </a-row>
 
+    <create-enterprise-data-modal ref="createEnterpriseDataModal"
+                                  @addAnData="userAddAnEnterpriseData" />
     <insert-point-modal ref="insertPointModal" />
     <other-data-files-modal ref="otherDataFilesModal" />
 
@@ -96,6 +98,8 @@
   import { mapGetters } from 'vuex'
   import { removePropertyOfNull } from "@/utils/util";
   import moment from "dayjs";
+
+  import CreateEnterpriseDataModal from "@/views/enterprisedata/SubModal/CreateEnterpriseDataModal";
   import InsertPointModal from "@/views/enterprisedata/SubModal/InsertPointModal";
   import OtherDataFilesModal from "@/views/enterprisedata/SubModal/OtherDataFilesModal";
 
@@ -104,6 +108,7 @@
     name: "EnterpriseData",     // 企业数据页面
     mixins: [ListMixin],
     components: {
+      CreateEnterpriseDataModal,
       InsertPointModal,
       OtherDataFilesModal,
     },
@@ -358,6 +363,7 @@
       addOne() {
         // 新增按钮动作
         console.log('新增一行数据的动作')
+        this.$refs.createEnterpriseDataModal.open(record)
       },
       showFileTextModal(record) {
         // this.$refs.accessBusWindow.open(record)
@@ -383,6 +389,10 @@
       },
       showOtherNetFileModal(record) {
         // this.$refs.calcResultWindow.open(record)
+      },
+      // 创建一条企业数据弹窗的回调
+      userAddAnEnterpriseData(values) {
+        this.loadData(this.ipagination.current)         // 刷新主table当前页
       },
       // 企业数据 - 主表格获取数据组装
       formatEnterpriseListData(response) {

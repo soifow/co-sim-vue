@@ -1,0 +1,322 @@
+<template>
+  <a-modal
+    :title="title"
+    :width="1000"
+    :visible="visible"
+    :destroyOnClose="true"
+    :confirmLoading="confirmLoading"
+    @cancel="handleCancel"
+  >
+    <a-spin :spinning="confirmLoading">
+      <!-- table区域-begin -->
+      <div>
+        <a-table
+          size="middle"
+          bordered
+          rowKey="id"
+          :columns="columns"
+          :dataSource="dataSource"
+          :pagination="false"
+          :loading="loading"
+        >
+
+          <div slot="file" slot-scope="text, record">
+            <span v-if="record.fileName">
+              {{record.fileName}}
+            </span>
+          </div>
+
+          <span slot="action" slot-scope="text, record">
+            <a @click="handleDetail(record)">查看</a>
+            <a-divider type="vertical" />
+            <a-upload :customRequest="customRequest"
+                      :show-upload-list="false"
+                      :before-upload="function(file) { return beforeUpload(file, record)}"
+                      @change="function(info) { return handleUploadFileChange(info, record)}"
+                      :disabled="!enableUpload">
+              <a :style="{color: !enableUpload ? 'gray' : ''}"
+                 :disabled="!enableUpload"> 上传 </a>
+            </a-upload>
+            <a-divider type="vertical" />
+            <a :href="`${url.download}?filepath=${record.filePath}`">下载</a>
+          </span>
+        </a-table>
+      </div>
+      <!-- table区域-end -->
+    </a-spin>
+
+    <template slot="footer">
+      <div v-if="enableUpload">
+        <a-button type="primary"
+                  @click="handleOk">完成任务</a-button>
+      </div>
+      <div v-else>
+        <a-button @click="handleCancel">关闭</a-button>
+      </div>
+    </template>
+
+  </a-modal>
+</template>
+
+<script>
+  import { getAction, postAction } from '@/api/manage'
+  import { axios } from '@/utils/request'
+  import { mapGetters } from 'vuex'
+  import { ListMixin } from '@/mixins/ListMixin'
+
+  export default {
+    name: 'CreateEnterpriseDataWindow',
+    mixins: [ListMixin],
+    components: {
+      // JTreeSelectWindow,
+      // JImageUploadBatch
+    },
+    data() {
+      return {
+        title: '新建企业数据',
+        visible: false,
+        labelCol: { xs: { span: 24 }, sm: { span: 5 } },
+        wrapperCol: { xs: { span: 24 }, sm: { span: 16 } },
+        reqParams: {},
+        uploadParams: {},
+        takeUserId: null,               // 认领任务的用户id
+        taskStatus: 2,                  // 任务状态
+        confirmLoading: false,
+        disableMixinCreated: true,      // 本组件初始化时不进行数据请求（弹窗被联合仿真页面加载初始化时）
+        // 表头
+        columns: [
+          {
+            title: '序号',
+            dataIndex: '',
+            key: 'rowIndex',
+            width: 60,
+            align: 'center',
+            customRender: function (t, r, index) {
+              return parseInt(index) + 1
+            },
+          },
+          {
+            title: '文件说明',
+            align: 'center',
+            dataIndex: 'fileDesc',
+          },
+          {
+            title: '文件名称',
+            dataIndex: 'fileName',
+            scopedSlots: { customRender: 'file' },
+            align: 'center',
+          },
+          {
+            title: '操作',
+            dataIndex: 'action',
+            scopedSlots: { customRender: 'action' },
+            align: 'center',
+            width: 170,
+          },
+        ],
+        url: {
+          list: '/v1/simulation/joint/outfile.g',
+          download: '/v1/simulation/joint/download.g',
+          uploadFile: '/v1/simulation/joint/upload.g',
+          finishTask: '/v1/simulation/joint/update.g',
+        },
+      }
+    },
+    computed: {
+      ...mapGetters(['userInfo','teamInfo']),
+      isAllFileUploaded: function () {  // 查看是否还有未上传的文件（true-所有文件都上传完毕;false-仍有未完成上传的文件）
+        let unUpload = false
+        this.dataSource.some(item => {
+          if (item.fileName == null || item.fileName == undefined || item.fileName.length === 0) {
+            unUpload = true       // 该文件未上传
+            return true       // 跳出数组循环
+          }
+        })
+        return !unUpload
+      },
+      // // 是否是认领任务的用户
+      // isCurrentUser: function () {
+      //   return this.takeUserId == this.userInfo.id
+      // },
+      // 该任务是否已完成
+      isTaskFinished: function () {
+        return this.taskStatus === 2
+      },
+      // 是否允许上传文件(是认领任务的用户且任务未完成时允许上传)
+      enableUpload: function () {
+        // return (this.isCurrentUser && !this.isTaskFinished)
+        return true
+      },
+    },
+    created() {},
+    methods: {
+      loadData() {
+        if (!this.url.list) {
+          this.$message.error('请设置url.list属性!')
+          return
+        }
+
+        this.loading = true
+        getAction(this.url.list, this.reqParams).then((res) => {
+          if (res.success) {
+            let data = this.formatListData(res.result)
+            this.dataSource = data
+          } else {
+            this.$message.error(`${res.message}`)
+          }
+          this.loading = false
+        }).catch(err => {
+          this.$message.error(`${err}`)
+        })
+      },
+      open(record) {
+        this.visible = true
+        this.takeUserId = record.takeUserId         // 当前任务被哪个用户认领了
+        this.taskStatus = record.taskStatus         // 当前任务状态
+        this.reqParams = {
+          id: record.id,
+        }
+        this.uploadParams = {     // 上传文件接口使用的参数
+          id: record.id,
+        }
+        this.loadData()
+      },
+      close() {
+        this.$emit('close')
+        this.visible = false
+      },
+      handleOk() {
+        if (!this.isAllFileUploaded) {    // 完成成功前需要检查文件是否都上传完毕了
+          this.$message.error(`仍有文件未完成上传，无法完成任务`)
+          return
+        }
+
+        let params = {
+          comuseruid: this.userInfo.id,
+          taskstatus: 2,
+        }
+        params = Object.assign(params, this.reqParams)
+        postAction(this.url.finishTask, params).then(res => {
+          if (res.success) {
+            if (res.result === true) {
+              this.taskStatus = 2         // 修改当前任务状态为已完成
+              this.$emit('addAnData', {taskId: this.reqParams.id, userId: this.takeUserId})
+            }
+          } else {
+            this.$message.error(`${res.message}`)
+          }
+        }).catch(err => {
+          this.$message.error(`${err}`)
+        })
+
+      },
+      handleCancel() {
+        this.close()
+      },
+      formatListData(response) {
+        let result = []
+        if (response.length) {
+          response.forEach(resp => {
+            let row = {}
+            row['fileName'] = resp.filename           // 文件名
+            row['fileId'] = resp.fileid               // 文件上传接口使用的参数
+            row['filePath'] = resp.filepath           // 文件下载接口使用的参数
+            row['fileDesc'] = resp.filedesc           // 文件描述信息
+            row['fileSuffix'] = resp.filetype.toLowerCase()    // 文件扩展名
+            result.push(row)
+          })
+        }
+        return result
+      },
+      // 通过文件名获取文件扩展名
+      getFileSuffixFrom(fileName) {
+        let nameParts = fileName.split('.')
+        if (nameParts.length > 1) {
+          let suffixStr = nameParts[1]
+          if (suffixStr.indexOf(')') === -1) {
+            return suffixStr        // 无需处理末尾的括号直接返回
+          } else {
+            return suffixStr = suffixStr.substring(0, suffixStr.length - 1)     // 需要去掉末尾的括号
+          }
+        }
+        return ''
+      },
+      // 文件上传前的钩子（file-系统弹窗选择的文件信息；record-table该行数据项）
+      beforeUpload(file, record) {
+        let fileSuffix = this.getFileSuffixFrom(file.name).toLowerCase()
+        const isRightType = fileSuffix === record.fileSuffix      // 比较用户当前选择的文件扩展名是否与本行要求的文件扩展名一致
+        if (!isRightType) {
+          this.$message.error(`上传文件格式错误，需要上传${record.fileSuffix}格式的文件`);
+        }
+        this.uploadParams = Object.assign(this.uploadParams, {
+          fileid: record.fileId,
+        })   // 将正确的文件名放入上传接口的参数中
+        return isRightType
+      },
+      // 文件上传过程中的回调
+      handleUploadFileChange(info, record) {
+        if (info.file.status !== 'uploading') {
+          console.log(info.file, info.fileList)
+        }
+        if (info.file.status === 'done') {
+          this.$message.success(`${info.file.name} 文件上传成功`)
+          this.loadData()         // 重新刷新本页数据（主要为了获取刚上传的文件的下载路径）
+        } else if (info.file.status === 'error') {
+          this.$message.error(`${info.file.name} 文件上传失败`)
+        }
+      },
+      // 自定义上传，不通过action属性
+      customRequest(file) {
+        // 后端需要接受的参数是formData数据，
+        const form = new FormData()
+        form.append('file', file.file)
+        Object.keys(this.uploadParams).forEach(key => {
+          form.append(key, this.uploadParams[key])
+        })
+        this.uploadFile(form).then(res => {
+          if (res.success) {
+            // 调用组件内方法（回调至this.handleUploadFileChange）, 设置为成功状态
+            file.onSuccess(res, file.file)
+            file.status = 'done'
+          } else {
+            file.onError()
+            file.status = 'error'
+          }
+        })
+      },
+      // 设置好请求头
+      uploadFile(params) {
+        return axios({
+          url: this.url.uploadFile,
+          method: 'post',
+          headers: { 'Content-Type': 'multipart/form-data' },
+          data: params
+        })
+      },
+    },
+  }
+</script>
+
+<style lang="less" scoped>
+  .search-div {
+    display: flex;
+    align-items: stretch;
+    margin-bottom: 10px;
+  }
+  /deep/ .search-form {
+    flex: 1;
+    .ant-form-item {
+      margin-bottom: 10px;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+  .search-btn {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin-left: 15px;
+  }
+</style>
