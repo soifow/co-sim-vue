@@ -85,6 +85,7 @@
     </a-row>
 
     <insert-point-modal ref="insertPointModal" />
+    <other-data-files-modal ref="otherDataFilesModal" />
 
   </div>
 </template>
@@ -96,6 +97,7 @@
   import { removePropertyOfNull } from "@/utils/util";
   import moment from "dayjs";
   import InsertPointModal from "@/views/enterprisedata/SubModal/InsertPointModal";
+  import OtherDataFilesModal from "@/views/enterprisedata/SubModal/OtherDataFilesModal";
 
   export default {
     description: '这是企业数据页面',
@@ -103,7 +105,7 @@
     mixins: [ListMixin],
     components: {
       InsertPointModal,
-
+      OtherDataFilesModal,
     },
     data() {
       return {
@@ -370,12 +372,13 @@
         // this.$refs.calcResultWindow.open(record)
       },
       showOtherDataFileModal(record) {
-        // this.$refs.calcResultWindow.open(record)
+        this.$refs.otherDataFilesModal.open(record)
       },
       showResultFileModal(record) {
         // this.$refs.calcResultWindow.open(record)
       },
       calcActionInvoked(record) {
+        // to do 根据当前用户是否允许自动计算的状态决定本列是否允许操作
         // 触发计算动作api接口
       },
       showOtherNetFileModal(record) {
