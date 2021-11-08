@@ -19,7 +19,7 @@ export function filterObj(obj) {
 
 
 // 删除所传对象中值为null的属性
-function removePropertyOfNull(obj) {
+export function removePropertyOfNull(obj) {
   Object.keys(obj).forEach(item => {
     if (obj[item] == null || obj[item] == undefined) {
       delete obj[item]

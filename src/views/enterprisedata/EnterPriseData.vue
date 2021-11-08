@@ -18,16 +18,16 @@
 
     <a-row>
       <a-col :span="24">
+<!--        :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"-->
         <a-table
           ref="table"
           bordered
           size="middle"
-          rowKey="userId"
+          rowKey="id"
           :columns="columns"
           :dataSource="dataSource"
           :pagination="ipagination"
           :loading="loading"
-          :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
           @change="handleTableChange"
           :scroll="{ x: 1500 }"
         >
@@ -38,9 +38,38 @@
 <!--            </span>-->
 <!--          </template>-->
 
-<!--          <template slot="address" slot-scope="text, record, index">-->
-<!--            <a @click="showAccessBus(record)">{{record.station}}</a>-->
-<!--          </template>-->
+          <template slot="fileName" slot-scope="text, record, index">
+            <a @click="showFileTextModal(record)">{{record.fileName}}</a>
+          </template>
+
+          <template slot="pointNum" slot-scope="text, record, index">
+            <a @click="showPointInfoModal(record)">{{record.pointNum}}</a>
+          </template>
+
+          <template slot="nodeNum" slot-scope="text, record, index">
+            <a @click="showNodeInfoModal(record)">{{record.nodeNum}}</a>
+          </template>
+
+          <template slot="netFileName" slot-scope="text, record, index">
+            <a @click="showNetFileModal(record)">{{record.netFileName}}</a>
+          </template>
+
+          <template slot="otherDataFile" slot-scope="text, record, index">
+            <a @click="showOtherDataFileModal(record)">{{record.otherDataFile}}</a>
+          </template>
+
+          <template slot="resultFile" slot-scope="text, record, index">
+            <a @click="showResultFileModal(record)">{{record.resultFile}}</a>
+          </template>
+
+          <template slot="calculation" slot-scope="text, record, index">
+<!--            <a @click="showResultFileModal(record)">{{record.resultFile}}</a>-->
+            <a-button type="primary" @click="calcActionInvoked(record)">计算</a-button>
+          </template>
+
+          <template slot="otherNetFile" slot-scope="text, record, index">
+            <a @click="showOtherNetFileModal(record)">{{record.otherNetFile}}</a>
+          </template>
 
 <!--          <template slot="requirement" slot-scope="text, record, index">-->
 <!--            <a-tooltip trigger="click">-->
@@ -49,14 +78,6 @@
 <!--              </template>-->
 <!--              <a>{{record.dataRequirement}}</a>-->
 <!--            </a-tooltip>-->
-<!--          </template>-->
-
-<!--          <template slot="calcData" slot-scope="text, record, index">-->
-<!--            <a @click="showCalcData(record)">共{{record.dataFiles}}个文件[.DAT]</a>-->
-<!--          </template>-->
-
-<!--          <template slot="calcResult" slot-scope="text, record, index">-->
-<!--            <a @click="showCalcResult(record)">共{{record.resultFiles}}个文件[.BAT,.BSE]</a>-->
 <!--          </template>-->
 
         </a-table>
@@ -69,6 +90,7 @@
   import { getAction } from '@/api/manage'
   import { ListMixin } from '@/mixins/ListMixin'
   import { mapGetters } from 'vuex'
+  import { removePropertyOfNull } from "@/utils/util";
   import moment from "dayjs";
 
   export default {
@@ -95,64 +117,139 @@
               }
             },*/
           {
-            title: '提交时间',
+            title: '数据文件编号',
+            align: 'center',
+            width: 150,
+            dataIndex: 'id',
+          },
+          {
+            title: '文件名称',
             align: 'center',
             width: 120,
-            dataIndex: 'createTime',
+            dataIndex: 'fileName',
+            scopedSlots: { customRender: 'fileName' },
+          },
+          {
+            title: '基准容量(MVA)',
+            align: 'center',
+            width: 150,
+            dataIndex: 'baseCapacity',
+          },
+          {
+            title: '所属企业',
+            align: 'center',
+            width: 100,
+            dataIndex: 'enterprise',
+          },
+          {
+            title: '所属用户',
+            align: 'center',
+            width: 150,
+            dataIndex: 'userName',
+            // ellipsis: true,                 // 超过宽度省略显示
           },
           {
             title: '任务类型',
             align: 'center',
-            width: 100,
+            width: 180,
             dataIndex: 'taskType',
           },
           {
-            title: '任务状态',
-            align: 'center',
-            width: 100,
-            dataIndex: 'taskStatusStr',
-            scopedSlots: { customRender: 'taskStatus' },
-          },
-          {
-            title: '接入地点',
+            title: '电网数据类型',
             align: 'center',
             width: 150,
-            dataIndex: 'station',
-            scopedSlots: { customRender: 'address' },
-            ellipsis: true,                 // 超过宽度省略显示
+            dataIndex: 'dataType',
           },
           {
-            title: '数据要求',
-            align: 'center',
-            width: 180,
-            dataIndex: 'dataRequirement',
-            scopedSlots: { customRender: 'requirement' },
-          },
-          {
-            title: '计算数据',
+            title: '电网数据时间',
             align: 'center',
             width: 150,
-            dataIndex: 'dataFiles',
-            scopedSlots: { customRender: 'calcData' },
+            dataIndex: 'dataTime',
           },
           {
-            title: '计算结果',
-            align: 'center',
-            width: 150,
-            dataIndex: 'resultFiles',
-            scopedSlots: { customRender: 'calcResult' },
-          },
-          {
-            title: '认领时间',
+            title: '电网规划数据年',
             align: 'center',
             width: 120,
-            dataIndex: 'claimTime',
+            dataIndex: 'plan',
           },
           {
-            title: '返回时间',
+            title: '电网规划数据方式',
+            align: 'center',
+            width: 150,
+            dataIndex: 'planDataType',
+          },
+          {
+            title: '接入点数',
             align: 'center',
             width: 120,
-            dataIndex: 'returnTime',
+            dataIndex: 'pointNum',
+            scopedSlots: { customRender: 'pointNum' },
+          },
+          {
+            title: '接收时间',
+            align: 'center',
+            width: 150,
+            dataIndex: 'receiveTime',
+          },
+          {
+            title: '节点数',
+            align: 'center',
+            width: 120,
+            dataIndex: 'nodeNum',
+            scopedSlots: { customRender: 'nodeNum' },
+          },
+          {
+            title: '电网数据文件编号',
+            align: 'center',
+            width: 150,
+            dataIndex: 'dataFileNo',
+          },
+          {
+            title: '电网文件名称',
+            align: 'center',
+            width: 120,
+            dataIndex: 'netFileName',
+            scopedSlots: { customRender: 'netFileName' },
+          },
+          {
+            title: '计算状态',
+            align: 'center',
+            width: 120,
+            dataIndex: 'calcState',
+          },
+          {
+            title: '完成时间',
+            align: 'center',
+            width: 150,
+            dataIndex: 'finishTime',
+          },
+          {
+            title: '其他数据文件',
+            align: 'center',
+            width: 120,
+            dataIndex: 'otherDataFile',
+            scopedSlots: { customRender: 'otherDataFile' },
+          },
+          {
+            title: '计算结果文件',
+            align: 'center',
+            width: 120,
+            dataIndex: 'resultFile',
+            scopedSlots: { customRender: 'resultFile' },
+          },
+          {
+            title: '计算',
+            align: 'center',
+            width: 120,
+            dataIndex: 'calculation',
+            scopedSlots: { customRender: 'calculation' },
+          },
+          {
+            title: '其他电网数据文件',
+            align: 'center',
+            width: 150,
+            dataIndex: 'otherNetFile',
+            scopedSlots: { customRender: 'otherNetFile' },
           },
         ],
         url: {
@@ -162,9 +259,9 @@
     },
     computed: {
       ...mapGetters(['userInfo','teamInfo','projectInfo']),   // 从store中取值
-      importExcelUrl: function () {
-        return `${window._CONFIG['domianURL']}/${this.url.importExcelUrl}`
-      },
+      // importExcelUrl: function () {
+      //   return `${window._CONFIG['domianURL']}/${this.url.importExcelUrl}`
+      // },
       taskStatusStrColor: function () {   // 无法直接给计算属性传参，需要用匿名函数实现，透传给匿名函数
         return function (taskStatus) {
           switch (taskStatus) {
@@ -182,6 +279,7 @@
     },
     methods: {
       loadData(arg) {
+        console.log('in loadData from enterPriseData.vue')
         if (!this.url.list) {
           this.$message.error('请设置url.list属性!')
           return
@@ -190,30 +288,56 @@
         if (arg === 1) {
           this.ipagination.current = 1
         }
-        let params = this.getQueryParams()          // 查询条件
-        params.companyId = this.companyId
-        params.pageNum = params.pageNo
-        params.sort = 'desc'
-        params.theproject = this.projectInfo.uid    // 工程id
-        params.pveruid = this.projectInfo.veruid    // 工程版本
-        params.userid = this.userInfo.id            // 提交用户id
-        this.loading = true
-        console.log(params)
-        getAction(this.url.list, params).then((res) => {
-          if (res.success) {
-            let data = this.formatCoSimAdminData(res.result.records)
-            this.dataSource = data
-            this.ipagination.total = res.result.total
-          }
-          if (res.code === 510) {
-            this.$message.warning(res.message)
-          }
-          this.loading = false
-        })
-      },
-      onChangeRangeDate(value, dateString) {
-        this.queryParam.starttime = dateString[0]
-        this.queryParam.endtime = dateString[1]
+        // let params = this.getQueryParams()          // 查询条件
+        // params.companyId = this.companyId
+        // params.pageNum = params.pageNo
+        // params.sort = 'desc'
+        // params.theproject = this.projectInfo.uid    // 工程id
+        // params.pveruid = this.projectInfo.veruid    // 工程版本
+        // params.userid = this.userInfo.id            // 提交用户id
+
+        // this.loading = true
+        // console.log(params)
+        // getAction(this.url.list, params).then((res) => {
+        //   if (res.success) {
+        //     let data = this.formatEnterpriseListData(res.result.records)
+        //     this.dataSource = data
+        //     this.ipagination.total = res.result.total
+        //   }
+        //   if (res.code === 510) {
+        //     this.$message.warning(res.message)
+        //   }
+        //   this.loading = false
+        // })
+
+        // 测试代码
+        let testData = [
+          {
+            'id': '0',
+            'fileName': '文件名1',
+            'baseCapacity': 120,
+            'enterprise': '企业名1',
+            'userName': '用户名1',
+            'taskType': 6,
+            'dataType': 1,
+            'dataTime': 1636338050734,
+            'plan': 2022,
+            'planDataType': 1,
+            'pointNum': 10,
+            'receiveTime': 1636338070321,
+            'nodeNum': 24,
+            'dataFileNo': '4001',
+            'netFileName': '电网文件名1',
+            'calcState': 0,
+            'finishTime': 1636338081368,
+            'otherDataFile': 2,
+            'resultFile': 3,
+            'otherNetFile': 5,
+          },
+        ]
+        this.dataSource = this.formatEnterpriseListData(testData)
+        this.ipagination.total = 1
+        // 测试代码结束
       },
       // handleMenuClick(e) {
       //   if (e.key == 1) {
@@ -224,36 +348,62 @@
       //     this.batchFrozen(1)
       //   }
       // },
-      showAccessBus(record) {
-        this.$refs.accessBusWindow.open(record)
+      addOne() {
+        // 新增按钮动作
+        console.log('新增一行数据的动作')
       },
-      showCalcData(record) {
-        this.$refs.calcDataWindow.open(record)
+      showFileTextModal(record) {
+        // this.$refs.accessBusWindow.open(record)
       },
-      showCalcResult(record) {
-        this.$refs.calcResultWindow.open(record)
+      showPointInfoModal(record) {
+        // this.$refs.calcDataWindow.open(record)
       },
-      // 联合仿真（企业管理员）主表格获取数据组装
-      formatCoSimAdminData(response) {
+      showNodeInfoModal(record) {
+        // this.$refs.calcResultWindow.open(record)
+      },
+      showNetFileModal(record) {
+        // this.$refs.calcResultWindow.open(record)
+      },
+      showOtherDataFileModal(record) {
+        // this.$refs.calcResultWindow.open(record)
+      },
+      showResultFileModal(record) {
+        // this.$refs.calcResultWindow.open(record)
+      },
+      calcActionInvoked(record) {
+        // 触发计算动作api接口
+      },
+      showOtherNetFileModal(record) {
+        // this.$refs.calcResultWindow.open(record)
+      },
+      // 企业数据 - 主表格获取数据组装
+      formatEnterpriseListData(response) {
         let result = []
         console.log(response)
         if (response.length) {
           response.forEach(resp => {
             let rowObj = {}     // 每行对应的数据结构
-            rowObj['createTime'] = this.formatTableTimeStr(resp.committime, '未提交')       // 提交时间
-            rowObj['projectId'] = resp.theproject         // 所属工程
-            rowObj['gridId'] = resp.thegrid               // 外部电网id（接入地点子弹窗请求所需要的数据）
             rowObj['id'] = resp.id                        // 该行对应结果的唯一id（计算结果这类子弹窗请求所需要的数据）
-            rowObj['taskType'] = this.formatTaskTypeStr(resp.tasktype)        // 任务类型
-            rowObj['taskStatus'] = resp.taskstatus                  // 任务状态
-            rowObj['taskStatusStr'] = this.formatTaskStatusStr(resp.taskstatus)  // 任务状态描述
-            rowObj['station'] = resp.station              // 接入地点
-            rowObj['dataRequirement'] = resp.datademand   // 数据要求
-            rowObj['dataTooltip'] = resp.datadesc         // 数据要求列被点击后的toolTip中显示的内容
-            rowObj['dataFiles'] = resp.calcdata           // 计算数据文件数量
-            rowObj['resultFiles'] = resp.calcresult       // 计算结果文件数量
-            rowObj['claimTime'] = this.formatTableTimeStr(resp.taketime, '未认领')           // 认领时间
-            rowObj['returnTime'] = this.formatTableTimeStr(resp.backtime, '未返回')          // 返回时间
+            rowObj['fileName'] = resp.fileName            // 文件名称
+            rowObj['baseCapacity'] = resp.baseCapacity         // 基准容量
+            rowObj['enterprise'] = resp.enterprise        // 所属企业
+            rowObj['userName'] = resp.userName            // 所属用户
+            rowObj['taskType'] = this.formatTaskTypeStr(resp.taskType)        // 任务类型
+            rowObj['dataType'] = resp.dataType          // 电网数据类型
+            rowObj['dataTime'] = this.formatTableTimeStr(resp.dataTime)      // 电网数据时间
+            rowObj['plan'] = resp.plan                  // 电网规划数据年
+            rowObj['planDataType'] = resp.planDataType              // 电网规划数据方式
+            rowObj['pointNum'] = resp.pointNum   // 接入点数
+            rowObj['receiveTime'] = this.formatTableTimeStr(resp.receiveTime, '未接收')       // 接收时间
+            rowObj['nodeNum'] = resp.nodeNum              // 节点数
+            rowObj['dataFileNo'] = resp.dataFileNo           // 电网数据文件编号
+            rowObj['netFileName'] = resp.netFileName       // 电网文件名称
+            rowObj['calcState'] = this.formatCalcStatusStr(resp.calcState)            // 计算状态
+            rowObj['finishTime'] = this.formatTableTimeStr(resp.finishTime, '未完成')   // 完成时间
+            rowObj['otherDataFile'] = resp.otherDataFile         // 其他数据文件
+            rowObj['resultFile'] = resp.resultFile         // 计算结果文件
+            rowObj['action'] = 'actionSlot'
+            rowObj['otherNetFile'] = resp.otherNetFile    // 其他电网数据文件
             rowObj = removePropertyOfNull(rowObj)         // 删除无效key
             result.push(rowObj)
           })
@@ -282,15 +432,15 @@
             return taskType + ''
         }
       },
-      // 主表格任务状态显示格式化
-      formatTaskStatusStr(taskType) {
+      // 主表格计算状态显示格式化
+      formatCalcStatusStr(taskType) {
         switch (taskType) {
           case 0:
-            return '未认领'
+            return '计算状态0'
           case 1:
-            return '认领计算中'
+            return '计算状态1'
           case 2:
-            return '结果已返回'
+            return '计算状态2'
           default:
             return taskType + ''
         }
