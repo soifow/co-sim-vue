@@ -53,12 +53,12 @@ export const ListMixin = {
     }
   },
   created() {
-    // if(!this.disableMixinCreated){
+    if (!this.disableMixinCreated) {
       console.log(' -- mixin created -- ')
       this.loadData();
       //初始化字典配置 在自己页面定义
       this.initDictConfig();
-    // }
+    }
   },
   computed: {
     //token header

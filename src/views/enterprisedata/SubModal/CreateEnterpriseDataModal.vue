@@ -8,8 +8,37 @@
     @cancel="handleCancel"
   >
     <a-spin :spinning="confirmLoading">
-      <!-- table区域-begin -->
-      <div>
+      <a-form :form="form"
+              :label-col="labelCol"
+              :wrapper-col="wrapperCol">
+
+        <a-row :gutter="0">
+          <a-col :span="12" :offset="6">
+            <a-form-item label="任务类型">
+<!--              <a-select :v-decorator="['taskType', ctrlOptions.taskType]">-->
+              <a-select :defaultValue="taskType" @change="selectChanged">
+                <a-select-option :value="2">
+                  潮流计算
+                </a-select-option>
+                <a-select-option :value="6">
+                  短路电流计算
+                </a-select-option>
+                <a-select-option :value="9">
+                  暂态故障仿真
+                </a-select-option>
+              </a-select>
+            </a-form-item>
+
+          </a-col>
+        </a-row>
+
+      </a-form>
+
+
+
+
+      <a-row>
+        <!-- table区域-begin -->
         <a-table
           size="middle"
           bordered
@@ -27,8 +56,8 @@
           </div>
 
           <span slot="action" slot-scope="text, record">
-            <a @click="handleDetail(record)">查看</a>
-            <a-divider type="vertical" />
+<!--            <a @click="handleDetail(record)">查看</a>-->
+<!--            <a-divider type="vertical" />-->
             <a-upload :customRequest="customRequest"
                       :show-upload-list="false"
                       :before-upload="function(file) { return beforeUpload(file, record)}"
@@ -37,18 +66,19 @@
               <a :style="{color: !enableUpload ? 'gray' : ''}"
                  :disabled="!enableUpload"> 上传 </a>
             </a-upload>
-            <a-divider type="vertical" />
-            <a :href="`${url.download}?filepath=${record.filePath}`">下载</a>
+<!--            <a-divider type="vertical" />-->
+<!--            <a :href="`${url.download}?filepath=${record.filePath}`">下载</a>-->
           </span>
         </a-table>
-      </div>
-      <!-- table区域-end -->
+        <!-- table区域-end -->
+      </a-row>
+
     </a-spin>
 
     <template slot="footer">
       <div v-if="enableUpload">
         <a-button type="primary"
-                  @click="handleOk">完成任务</a-button>
+                  @click="handleOk">创建</a-button>
       </div>
       <div v-else>
         <a-button @click="handleCancel">关闭</a-button>
@@ -68,15 +98,16 @@
     name: 'CreateEnterpriseDataWindow',
     mixins: [ListMixin],
     components: {
-      // JTreeSelectWindow,
-      // JImageUploadBatch
+
     },
     data() {
       return {
         title: '新建企业数据',
         visible: false,
+        taskType: 2,        // 创建任务类型
         labelCol: { xs: { span: 24 }, sm: { span: 5 } },
         wrapperCol: { xs: { span: 24 }, sm: { span: 16 } },
+        form: this.$form.createForm(this),
         reqParams: {},
         uploadParams: {},
         takeUserId: null,               // 认领任务的用户id
@@ -114,6 +145,38 @@
             width: 170,
           },
         ],
+        fileConfigs: {  // 每种类型的任务需要哪些文件
+          2: [
+            {
+              'id': 1,
+              'fileName': '',
+              'fileDesc': 'DAT文件',
+              'fileSuffix': '.dat',
+            },
+            {
+              'id': 2,
+              'fileName': '',
+              'fileDesc': 'BSE文件',
+              'fileSuffix': '.bse',
+            }
+          ],
+          6: [
+            {
+              'id': 1,
+              'fileName': '',
+              'fileDesc': 'DAT文件',
+              'fileSuffix': '.dat',
+            },
+          ],
+          9: [
+            {
+              'id': 1,
+              'fileName': '',
+              'fileDesc': 'BSE文件',
+              'fileSuffix': '.bse',
+            },
+          ],
+        },
         url: {
           list: '/v1/simulation/joint/outfile.g',
           download: '/v1/simulation/joint/download.g',
@@ -149,6 +212,9 @@
       },
     },
     created() {},
+    mounted() {
+      this.selectChanged(this.taskType)
+    },
     methods: {
       loadData() {
         if (!this.url.list) {
@@ -169,17 +235,20 @@
           this.$message.error(`${err}`)
         })
       },
-      open(record) {
+      open() {
         this.visible = true
-        this.takeUserId = record.takeUserId         // 当前任务被哪个用户认领了
-        this.taskStatus = record.taskStatus         // 当前任务状态
-        this.reqParams = {
-          id: record.id,
-        }
-        this.uploadParams = {     // 上传文件接口使用的参数
-          id: record.id,
-        }
-        this.loadData()
+        // this.takeUserId = record.takeUserId         // 当前任务被哪个用户认领了
+        // this.taskStatus = record.taskStatus         // 当前任务状态
+        // this.reqParams = {
+        //   id: record.id,
+        // }
+        // this.uploadParams = {     // 上传文件接口使用的参数
+        //   id: record.id,
+        // }
+        // this.loadData()
+      },
+      selectChanged(value) {
+        this.dataSource = this.fileConfigs[value]
       },
       close() {
         this.$emit('close')

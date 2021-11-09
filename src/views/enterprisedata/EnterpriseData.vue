@@ -12,7 +12,8 @@
         <a-button type="primary" @click="addOne">新增</a-button>
       </a-col>
       <a-col :span="6">
-        用户菜单
+        <a-avatar>User</a-avatar>
+        username
       </a-col>
     </a-row>
 
@@ -366,7 +367,7 @@
       addOne() {
         // 新增按钮动作
         console.log('新增一行数据的动作')
-        this.$refs.createEnterpriseDataModal.open(record)
+        this.$refs.createEnterpriseDataModal.open()
       },
       showFileTextModal(record) {
         this.$refs.editorTextModal.open(record)
