@@ -1,21 +1,7 @@
 <template>
   <div>
     <!-- header -->
-    <a-row :gutter="24">
-      <a-col :span="6">
-        icon
-      </a-col>
-      <a-col :span="6">
-        企业数据
-      </a-col>
-      <a-col :span="6">
-        <a-button type="primary" @click="addOne">新增</a-button>
-      </a-col>
-      <a-col :span="6">
-        <a-avatar>User</a-avatar>
-        username
-      </a-col>
-    </a-row>
+    <header-view @addOneBtnInvoked="addOne" />
 
     <a-row>
       <a-col :span="24">
@@ -101,6 +87,7 @@
   import { removePropertyOfNull } from "@/utils/util";
   import moment from "dayjs";
 
+  import HeaderView from "@/views/header/HeaderView";
   import CreateEnterpriseDataModal from "@/views/enterprisedata/SubModal/CreateEnterpriseDataModal";
   import EditorTextModal from "@/views/common/EditorTextModal";
   import InsertPointModal from "@/views/enterprisedata/SubModal/InsertPointModal";
@@ -111,6 +98,7 @@
     name: "EnterpriseData",     // 企业数据页面
     mixins: [ListMixin],
     components: {
+      HeaderView,
       CreateEnterpriseDataModal,
       EditorTextModal,
       InsertPointModal,
@@ -119,7 +107,6 @@
     data() {
       return {
         dataSource:[],    // 表格数据源
-
         columns: [
           /*{
               title: '#',         // 列表头名
