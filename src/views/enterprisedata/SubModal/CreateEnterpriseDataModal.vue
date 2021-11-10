@@ -111,7 +111,7 @@
         reqParams: {},
         uploadPosInfo: {},       // 上传文件本地暂存的数据
         takeUserId: null,               // 认领任务的用户id
-        taskStatus: 2,                  // 任务状态
+        // taskStatus: 2,                  // 任务状态
         confirmLoading: false,
         disableMixinCreated: true,      // 本组件初始化时不进行数据请求（弹窗被联合仿真页面加载初始化时）
         // 表头
@@ -156,8 +156,8 @@
             {
               'id': 2,
               'fileName': '',
-              'fileDesc': 'BSE文件',
-              'fileSuffix': 'bse',
+              'fileDesc': 'din文件',
+              'fileSuffix': 'din',
             }
           ],
           6: [
@@ -178,10 +178,10 @@
           ],
         },
         url: {
-          list: '/v1/simulation/joint/outfile.g',
-          download: '/v1/simulation/joint/download.g',
+          // list: '/v1/simulation/joint/outfile.g',
+          // download: '/v1/simulation/joint/download.g',
           uploadFile: '/v1/enterGrid/upload.g',
-          createTask: '/v1/simulation/joint/update.g',
+          createTask: '/v1/enterGrid/insert.g',
         },
       }
     },
@@ -201,10 +201,10 @@
       // isCurrentUser: function () {
       //   return this.takeUserId == this.userInfo.id
       // },
-      // 该任务是否已完成
-      isTaskFinished: function () {
-        return this.taskStatus === 2
-      },
+      // // 该任务是否已完成
+      // isTaskFinished: function () {
+      //   return this.taskStatus === 2
+      // },
       // 是否允许上传文件(是认领任务的用户且任务未完成时允许上传)
       enableUpload: function () {
         // return (this.isCurrentUser && !this.isTaskFinished)
@@ -216,25 +216,25 @@
       this.selectChanged(this.taskType)
     },
     methods: {
-      loadData() {
-        if (!this.url.list) {
-          this.$message.error('请设置url.list属性!')
-          return
-        }
-
-        this.loading = true
-        getAction(this.url.list, this.reqParams).then((res) => {
-          if (res.success) {
-            let data = this.formatListData(res.result)
-            this.dataSource = data
-          } else {
-            this.$message.error(`${res.message}`)
-          }
-          this.loading = false
-        }).catch(err => {
-          this.$message.error(`${err}`)
-        })
-      },
+      // loadData() {
+      //   if (!this.url.list) {
+      //     this.$message.error('请设置url.list属性!')
+      //     return
+      //   }
+      //
+      //   this.loading = true
+      //   getAction(this.url.list, this.reqParams).then((res) => {
+      //     if (res.success) {
+      //       let data = this.formatListData(res.result)
+      //       this.dataSource = data
+      //     } else {
+      //       this.$message.error(`${res.message}`)
+      //     }
+      //     this.loading = false
+      //   }).catch(err => {
+      //     this.$message.error(`${err}`)
+      //   })
+      // },
       open() {
         this.visible = true
         // this.takeUserId = record.takeUserId         // 当前任务被哪个用户认领了
@@ -260,17 +260,21 @@
           return
         }
 
+        this.loading = true
+
         let params = {
-          // comuseruid: this.userInfo.id,
-          taskstatus: 2,
+          filenames: this.getAllFilesName(this.taskType),
+          tasktype: this.taskType,
         }
         params = Object.assign(params, this.reqParams)
         postAction(this.url.createTask, params).then(res => {
-          if (res.success) {
-            if (res.result === true) {
-              this.taskStatus = 2         // 修改当前任务状态为已完成
-              this.$emit('addAnData', {taskId: this.reqParams.id, userId: this.takeUserId})
+          if (res.code === 0) {
+            if (res.data === true) {
+              // this.$emit('addAnData', {taskId: this.reqParams.id, userId: this.takeUserId})
+              this.$emit('addAnData')
             }
+            this.loading = false
+            this.visible = false
           } else {
             this.$message.error(`${res.message}`)
           }
@@ -282,19 +286,29 @@
       handleCancel() {
         this.close()
       },
-      formatListData(response) {
+      // formatListData(response) {
+      //   let result = []
+      //   if (response.length) {
+      //     response.forEach(resp => {
+      //       let row = {}
+      //       row['fileName'] = resp.filename           // 文件名
+      //       row['fileId'] = resp.fileid               // 文件上传接口使用的参数
+      //       row['filePath'] = resp.filepath           // 文件下载接口使用的参数
+      //       row['fileDesc'] = resp.filedesc           // 文件描述信息
+      //       row['fileSuffix'] = resp.filetype.toLowerCase()    // 文件扩展名
+      //       result.push(row)
+      //     })
+      //   }
+      //   return result
+      // },
+      // 获取当前任务类型所有已上传的文件名称
+      getAllFilesName(type) {
         let result = []
-        if (response.length) {
-          response.forEach(resp => {
-            let row = {}
-            row['fileName'] = resp.filename           // 文件名
-            row['fileId'] = resp.fileid               // 文件上传接口使用的参数
-            row['filePath'] = resp.filepath           // 文件下载接口使用的参数
-            row['fileDesc'] = resp.filedesc           // 文件描述信息
-            row['fileSuffix'] = resp.filetype.toLowerCase()    // 文件扩展名
-            result.push(row)
-          })
-        }
+        this.fileConfigs[type].forEach(item => {
+          if (item.fileName.length) {
+            result.push(item.fileName)
+          }
+        })
         return result
       },
       // 通过文件名获取文件扩展名
@@ -328,10 +342,10 @@
           console.log(info.file, info.fileList)
         }
         if (info.file.status === 'done') {
-          this.$message.success(`${info.file.name} 文件上传成功`)
+          this.$message.success(`${record.fileName} 文件上传成功`)    // 展示UI显示的文件名而不是用户本地文件名（服务端文件名）
           // this.loadData()         // 重新刷新本页数据（主要为了获取刚上传的文件的下载路径）
         } else if (info.file.status === 'error') {
-          this.$message.error(`${info.file.name} 文件上传失败`)
+          this.$message.error(`${info.file.name} 文件上传失败`)   // 展示用户本地所选择的文件名
         }
       },
       // 自定义上传，不通过action属性
