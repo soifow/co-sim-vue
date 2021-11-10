@@ -109,7 +109,7 @@
         wrapperCol: { xs: { span: 24 }, sm: { span: 16 } },
         form: this.$form.createForm(this),
         reqParams: {},
-        uploadParams: {},
+        uploadPosInfo: {},       // 上传文件本地暂存的数据
         takeUserId: null,               // 认领任务的用户id
         taskStatus: 2,                  // 任务状态
         confirmLoading: false,
@@ -151,13 +151,13 @@
               'id': 1,
               'fileName': '',
               'fileDesc': 'DAT文件',
-              'fileSuffix': '.dat',
+              'fileSuffix': 'dat',
             },
             {
               'id': 2,
               'fileName': '',
               'fileDesc': 'BSE文件',
-              'fileSuffix': '.bse',
+              'fileSuffix': 'bse',
             }
           ],
           6: [
@@ -165,7 +165,7 @@
               'id': 1,
               'fileName': '',
               'fileDesc': 'DAT文件',
-              'fileSuffix': '.dat',
+              'fileSuffix': 'dat',
             },
           ],
           9: [
@@ -173,20 +173,20 @@
               'id': 1,
               'fileName': '',
               'fileDesc': 'BSE文件',
-              'fileSuffix': '.bse',
+              'fileSuffix': 'bse',
             },
           ],
         },
         url: {
           list: '/v1/simulation/joint/outfile.g',
           download: '/v1/simulation/joint/download.g',
-          uploadFile: '/v1/simulation/joint/upload.g',
-          finishTask: '/v1/simulation/joint/update.g',
+          uploadFile: '/v1/enterGrid/upload.g',
+          createTask: '/v1/simulation/joint/update.g',
         },
       }
     },
     computed: {
-      ...mapGetters(['userInfo','teamInfo']),
+      // ...mapGetters(['userInfo','teamInfo']),
       isAllFileUploaded: function () {  // 查看是否还有未上传的文件（true-所有文件都上传完毕;false-仍有未完成上传的文件）
         let unUpload = false
         this.dataSource.some(item => {
@@ -261,11 +261,11 @@
         }
 
         let params = {
-          comuseruid: this.userInfo.id,
+          // comuseruid: this.userInfo.id,
           taskstatus: 2,
         }
         params = Object.assign(params, this.reqParams)
-        postAction(this.url.finishTask, params).then(res => {
+        postAction(this.url.createTask, params).then(res => {
           if (res.success) {
             if (res.result === true) {
               this.taskStatus = 2         // 修改当前任务状态为已完成
@@ -317,9 +317,9 @@
         if (!isRightType) {
           this.$message.error(`上传文件格式错误，需要上传${record.fileSuffix}格式的文件`);
         }
-        this.uploadParams = Object.assign(this.uploadParams, {
-          fileid: record.fileId,
-        })   // 将正确的文件名放入上传接口的参数中
+        this.uploadPosInfo = Object.assign(this.uploadPosInfo, {
+          fileId: record.id,
+        })   // 记录当前哪个位置在上传（为了将接口返回的文件名记录在正确的位置）
         return isRightType
       },
       // 文件上传过程中的回调
@@ -329,7 +329,7 @@
         }
         if (info.file.status === 'done') {
           this.$message.success(`${info.file.name} 文件上传成功`)
-          this.loadData()         // 重新刷新本页数据（主要为了获取刚上传的文件的下载路径）
+          // this.loadData()         // 重新刷新本页数据（主要为了获取刚上传的文件的下载路径）
         } else if (info.file.status === 'error') {
           this.$message.error(`${info.file.name} 文件上传失败`)
         }
@@ -339,11 +339,17 @@
         // 后端需要接受的参数是formData数据，
         const form = new FormData()
         form.append('file', file.file)
-        Object.keys(this.uploadParams).forEach(key => {
-          form.append(key, this.uploadParams[key])
-        })
+        // Object.keys(this.uploadParams).forEach(key => {
+        //   form.append(key, this.uploadParams[key])
+        // })
         this.uploadFile(form).then(res => {
-          if (res.success) {
+          if (res.code === 0) {
+            this.fileConfigs[this.taskType].some(item => {
+              if (item.id === this.uploadPosInfo['fileId']) {
+                item.fileName = res.data
+                return true
+              }
+            })
             // 调用组件内方法（回调至this.handleUploadFileChange）, 设置为成功状态
             file.onSuccess(res, file.file)
             file.status = 'done'

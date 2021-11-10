@@ -96,7 +96,7 @@ const err = (error) => {
 
 // request interceptor
 service.interceptors.request.use(config => {
-  if (!config.url.indexOf('/swan-') == 0) {
+  if (!config.url.indexOf('/swan-') == 0) {     // to do soifow 这里是否应该判断/so-？然后所有请求都需要加simulateUrl了？
     config.baseURL = apiBaseUrl
   }
   const token = Vue.ls.get(ACCESS_TOKEN)
@@ -113,8 +113,9 @@ service.interceptors.request.use(config => {
 
   //--添加createBy、updateBy start--
   if (config.method.toLocaleLowerCase() == "post" || config.method.toLocaleLowerCase() == "put") {
-    const userInfo = store.getters.userInfo || {};
-    if (config.data&& typeof config.data!= "string") {
+    // const userInfo = store.getters.userInfo || {};     // to do soifow 用户登录逻辑跳过，暂时注释掉这部分逻辑
+    const userInfo = {}
+    if (config.data && typeof config.data!= "string") {
       if (config.data.id) {
         config.data.updateBy = userInfo.id
       } else {
