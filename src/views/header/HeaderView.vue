@@ -11,11 +11,11 @@
       </a-col>
 
       <a-col :span="3" :offset="4">
-        企业数据
+        {{this.pageTitle}}
       </a-col>
 
       <a-col :span="2">
-        <a-button type="primary" @click="addOne">新增</a-button>
+        <a-button v-if="this.addBtnEnable" type="primary" @click="addOne">新增</a-button>
       </a-col>
 
       <a-col :span="2" :offset="5">
@@ -46,6 +46,18 @@
     name: "HeaderView",
     components: {
 
+    },
+    props: {
+      pageTitle: {
+        type: String,
+        required: true,
+        default: '默认标题',
+      },
+      addBtnEnable: {
+        type: Boolean,
+        required: true,
+        default: true,
+      },
     },
     data() {
       return {

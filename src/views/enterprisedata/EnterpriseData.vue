@@ -1,7 +1,9 @@
 <template>
   <div>
     <!-- header -->
-    <header-view @addOneBtnInvoked="addOne" />
+    <header-view :page-title="this.title"
+                 :add-btn-enable="true"
+                 @addOneBtnInvoked="addOne" />
 
     <a-row>
       <a-col :span="24">
@@ -106,6 +108,7 @@
     },
     data() {
       return {
+        title: '企业数据',
         dataSource:[],    // 表格数据源
         columns: [
           /*{

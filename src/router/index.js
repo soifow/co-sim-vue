@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import EnterpriseDataPage from '@/views/enterprisedata/EnterpriseData'
+import EnterpriseNodeList from "@/views/enterprisedata/EnterpriseNodeList";
 
 Vue.use(VueRouter)
 
@@ -9,6 +10,11 @@ const routes = [
     path: '/',
     name: 'MainPage',
     component: EnterpriseDataPage,
+  },
+  {
+    path: '/enterprisenode',
+    name: 'EnterpriseNode',
+    component: EnterpriseNodeList,
   },
   {
     path: '/about',
