@@ -365,8 +365,7 @@
         this.$refs.insertPointModal.open(record)
       },
       showNodeInfoModal(record) {
-        // this.$refs.calcResultWindow.open(record)
-        // to do soifow 路由
+        this.$router.push({ name:'EnterpriseNode', params: { 'filename': record.fileName } })
       },
       showNetFileModal(record) {
         this.$refs.editorTextModal.open(record)
@@ -410,7 +409,7 @@
             rowObj['planDataType'] = this.formatPlanDataTypeStr(resp.planmode)    // 电网规划数据方式
             rowObj['pointNum'] = resp.intercount   // 接入点数
             rowObj['receiveTime'] = this.formatTableTimeStr(resp.rcvtime, '未接收')       // 接收时间
-            rowObj['nodeNum'] = resp.nodeNum              // 节点数
+            rowObj['nodeNum'] = 3 // resp.nodeNum              // 节点数
             rowObj['dataFileNo'] = resp.dataFileNo           // 电网数据文件编号
             rowObj['netFileName'] = resp.netFileName       // 电网文件名称
             rowObj['calcState'] = this.formatCalcStatusStr(resp.calstas)            // 计算状态

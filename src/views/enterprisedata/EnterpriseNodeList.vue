@@ -166,6 +166,13 @@
     components: {
       HeaderView,
     },
+    props: {
+      filename: {   // 路由传参
+        type: String,
+        required: false,
+        default: '',
+      },
+    },
     data() {
       return {
         title: '企业节点信息',
@@ -278,7 +285,7 @@
           },
         ],
         url: {
-          list: '/v1/enterGrid/select.g',
+          list: '/v1/psdenternode/select.g',
         },
       }
     },
@@ -328,67 +335,72 @@
         },
       }
     },
+    mounted() {
+      
+    },
     methods: {
-      // loadData(arg) {
-      //   console.log('in loadData from enterPriseData.vue')
-      //   if (!this.url.list) {
-      //     this.$message.error('请设置url.list属性!')
-      //     return
-      //   }
-      //   //加载数据 若传入参数1则加载第一页的内容
-      //   if (arg === 1) {
-      //     this.ipagination.current = 1
-      //   }
-      //   let params = this.getQueryParams()          // 查询条件
-      //   params.pageNum = params.pageNo
-      //   // params.theproject = this.projectInfo.uid    // 工程id
-      //   // params.pveruid = this.projectInfo.veruid    // 工程版本
-      //   // params.userid = this.userInfo.id            // 提交用户id
-      //
-      //   this.loading = true
-      //   console.log(params)
-      //   postAction(this.url.list, params).then((res) => {
-      //     if (res.code === 0) {
-      //       let data = this.formatEnterpriseListData(res.data.records)
-      //       this.dataSource = data
-      //       this.ipagination.total = res.data.total
-      //     }
-      //
-      //     if (res.code < 0) {
-      //       this.$message.warning(res.message)
-      //     }
-      //     this.loading = false
-      //   })
-      //
-      //   // 测试代码
-      //   // let testData = [
-      //   //   {
-      //   //     'id': '0',
-      //   //     'name': '文件名1',
-      //   //     'sbase': 120,
-      //   //     'enterprise': '企业名1',
-      //   //     'user': '用户名1',
-      //   //     'tasktype': 6,
-      //   //     'eqtype': 1,
-      //   //     'opertime': 1636338050734,
-      //   //     'planyear': 2022,
-      //   //     'planmode': 1,
-      //   //     'intercount': 10,
-      //   //     'rcvtime': 1636338070321,
-      //   //     'nodeNum': 24,
-      //   //     'dataFileNo': '4001',
-      //   //     'netFileName': '电网文件名1',
-      //   //     'calstas': 0,
-      //   //     'endtime': 1636338081368,
-      //   //     'otherDataFile': 2,
-      //   //     'resultFile': 3,
-      //   //     'otherNetFile': 5,
-      //   //   },
-      //   // ]
-      //   // this.dataSource = this.formatEnterpriseListData(testData)
-      //   // this.ipagination.total = 1
-      //   // 测试代码结束
-      // },
+      loadData(arg) {
+        console.log(`${this.filename}`)
+        if (!this.url.list) {
+          this.$message.error('请设置url.list属性!')
+          return
+        }
+        //加载数据 若传入参数1则加载第一页的内容
+        if (arg === 1) {
+          this.ipagination.current = 1
+        }
+        let params = this.getQueryParams()          // 查询条件
+        params.filename = this.filename
+        params.pageNum = params.pageNo
+        // params.theproject = this.projectInfo.uid    // 工程id
+        // params.pveruid = this.projectInfo.veruid    // 工程版本
+        // params.userid = this.userInfo.id            // 提交用户id
+
+        this.loading = true
+        console.log(params)
+        postAction(this.url.list, params).then((res) => {
+          if (res.code === 0) {
+            this.formatEnterpriseNodeFormData(res.data)
+            let data = this.formatEnterpriseNodeListData(res.data.records)
+            this.dataSource = data
+            this.ipagination.total = res.data.total
+          }
+
+          if (res.code < 0) {
+            this.$message.warning(res.message)
+          }
+          this.loading = false
+        })
+
+        // 测试代码
+        // let testData = [
+        //   {
+        //     'id': '0',
+        //     'name': '文件名1',
+        //     'sbase': 120,
+        //     'enterprise': '企业名1',
+        //     'user': '用户名1',
+        //     'tasktype': 6,
+        //     'eqtype': 1,
+        //     'opertime': 1636338050734,
+        //     'planyear': 2022,
+        //     'planmode': 1,
+        //     'intercount': 10,
+        //     'rcvtime': 1636338070321,
+        //     'nodeNum': 24,
+        //     'dataFileNo': '4001',
+        //     'netFileName': '电网文件名1',
+        //     'calstas': 0,
+        //     'endtime': 1636338081368,
+        //     'otherDataFile': 2,
+        //     'resultFile': 3,
+        //     'otherNetFile': 5,
+        //   },
+        // ]
+        // this.dataSource = this.formatEnterpriseNodeListData(testData)
+        // this.ipagination.total = 1
+        // 测试代码结束
+      },
       showFileTextModal(record) {
         this.$refs.editorTextModal.open(record)
       },
@@ -414,8 +426,18 @@
       showOtherNetFileModal(record) {
         // this.$refs.calcResultWindow.open(record)
       },
-      // 企业数据 - 主表格获取数据组装
-      formatEnterpriseListData(response) {
+      // 企业节点信息 - 表头部分
+      formatEnterpriseNodeFormData(response) {
+        this.formData.fileNo = response.fileid
+        this.formData.fileName = response.filename
+        this.formData.enterprise = response.enterprise
+        this.formData.user = response.user
+        this.formData.totalLoad = response.totalload
+        this.formData.totalPower = response.totalgen
+        this.formData.totalCompensate = response.totalqcomp
+      },
+      // 企业节点信息 - 主表格获取数据组装
+      formatEnterpriseNodeListData(response) {
         let result = []
         console.log(response)
         if (response.length) {
@@ -423,6 +445,7 @@
             let rowObj = {}     // 每行对应的数据结构
             rowObj['id'] = resp.id                    // 该行对应结果的唯一id（计算结果这类子弹窗请求所需要的数据）
             rowObj['nodeName'] = resp.name            // 节点名称
+            rowObj['fileId'] = resp.fileid
             rowObj['baseVoltage'] = resp.vbase        // 基准电压
             rowObj['nodeType'] = resp.nodetype        // 节点类型
             rowObj['activePower'] = resp.pload        // 有功负荷
