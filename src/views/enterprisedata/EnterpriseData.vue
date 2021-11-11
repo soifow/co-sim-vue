@@ -81,7 +81,7 @@
 </template>
 
 <script>
-  import { getAction } from '@/api/manage'
+  import { postAction } from '@/api/manage'
   import { ListMixin } from '@/mixins/ListMixin'
   import { mapGetters } from 'vuex'
   import { removePropertyOfNull } from "@/utils/util";
@@ -128,7 +128,7 @@
           {
             title: '文件名称',
             align: 'center',
-            width: 120,
+            width: 180,
             dataIndex: 'fileName',
             scopedSlots: { customRender: 'fileName' },
           },
@@ -256,12 +256,12 @@
           },
         ],
         url: {
-          list: '/v1/simulation/joint/list.g',
+          list: '/v1/enterGrid/select.g',
         },
       }
     },
     computed: {
-      ...mapGetters(['userInfo','teamInfo','projectInfo']),   // 从store中取值
+      // ...mapGetters(['userInfo','teamInfo','projectInfo']),   // 从store中取值
       // importExcelUrl: function () {
       //   return `${window._CONFIG['domianURL']}/${this.url.importExcelUrl}`
       // },
@@ -291,55 +291,54 @@
         if (arg === 1) {
           this.ipagination.current = 1
         }
-        // let params = this.getQueryParams()          // 查询条件
-        // params.companyId = this.companyId
-        // params.pageNum = params.pageNo
-        // params.sort = 'desc'
+        let params = this.getQueryParams()          // 查询条件
+        params.pageNum = params.pageNo
         // params.theproject = this.projectInfo.uid    // 工程id
         // params.pveruid = this.projectInfo.veruid    // 工程版本
         // params.userid = this.userInfo.id            // 提交用户id
 
-        // this.loading = true
-        // console.log(params)
-        // getAction(this.url.list, params).then((res) => {
-        //   if (res.success) {
-        //     let data = this.formatEnterpriseListData(res.result.records)
-        //     this.dataSource = data
-        //     this.ipagination.total = res.result.total
-        //   }
-        //   if (res.code === 510) {
-        //     this.$message.warning(res.message)
-        //   }
-        //   this.loading = false
-        // })
+        this.loading = true
+        console.log(params)
+        postAction(this.url.list, params).then((res) => {
+          if (res.code === 0) {
+            let data = this.formatEnterpriseListData(res.data.records)
+            this.dataSource = data
+            this.ipagination.total = res.data.total
+          }
+
+          if (res.code < 0) {
+            this.$message.warning(res.message)
+          }
+          this.loading = false
+        })
 
         // 测试代码
-        let testData = [
-          {
-            'id': '0',
-            'name': '文件名1',
-            'sbase': 120,
-            'enterprise': '企业名1',
-            'user': '用户名1',
-            'tasktype': 6,
-            'eqtype': 1,
-            'opertime': 1636338050734,
-            'planyear': 2022,
-            'planmode': 1,
-            'intercount': 10,
-            'rcvtime': 1636338070321,
-            'nodeNum': 24,
-            'dataFileNo': '4001',
-            'netFileName': '电网文件名1',
-            'calstas': 0,
-            'endtime': 1636338081368,
-            'otherDataFile': 2,
-            'resultFile': 3,
-            'otherNetFile': 5,
-          },
-        ]
-        this.dataSource = this.formatEnterpriseListData(testData)
-        this.ipagination.total = 1
+        // let testData = [
+        //   {
+        //     'id': '0',
+        //     'name': '文件名1',
+        //     'sbase': 120,
+        //     'enterprise': '企业名1',
+        //     'user': '用户名1',
+        //     'tasktype': 6,
+        //     'eqtype': 1,
+        //     'opertime': 1636338050734,
+        //     'planyear': 2022,
+        //     'planmode': 1,
+        //     'intercount': 10,
+        //     'rcvtime': 1636338070321,
+        //     'nodeNum': 24,
+        //     'dataFileNo': '4001',
+        //     'netFileName': '电网文件名1',
+        //     'calstas': 0,
+        //     'endtime': 1636338081368,
+        //     'otherDataFile': 2,
+        //     'resultFile': 3,
+        //     'otherNetFile': 5,
+        //   },
+        // ]
+        // this.dataSource = this.formatEnterpriseListData(testData)
+        // this.ipagination.total = 1
         // 测试代码结束
       },
       // handleMenuClick(e) {
@@ -397,6 +396,9 @@
             rowObj['baseCapacity'] = resp.sbase         // 基准容量
             rowObj['enterprise'] = resp.enterprise        // 所属企业
             rowObj['userName'] = resp.user            // 所属用户
+            rowObj['theProject'] = resp.theproject    // 所属工程
+            rowObj['theJob'] = resp.theJob            // 所属作业
+            rowObj['theTask'] = resp.thetask          // 所属任务
             rowObj['taskType'] = this.formatTaskTypeStr(resp.tasktype)        // 任务类型
             rowObj['dataType'] = this.formatDataTypeStr(resp.eqtype)          // 电网数据类型
             rowObj['dataTime'] = this.formatTableTimeStr(resp.opertime)      // 电网数据时间
