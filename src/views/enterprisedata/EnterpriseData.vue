@@ -109,7 +109,7 @@
     data() {
       return {
         title: '企业数据',
-        dataSource:[],    // 表格数据源
+        dataSource:[],      // 表格数据源
         columns: [
           /*{
               title: '#',         // 列表头名
@@ -366,9 +366,10 @@
       },
       showNodeInfoModal(record) {
         // this.$refs.calcResultWindow.open(record)
+        // to do soifow 路由
       },
       showNetFileModal(record) {
-        // this.$refs.calcResultWindow.open(record)
+        this.$refs.editorTextModal.open(record)
       },
       showOtherDataFileModal(record) {
         this.$refs.otherDataFilesModal.open(record)

@@ -4,7 +4,6 @@
     :width="1000"
     :ok="false"
     :visible="visible"
-    :confirmLoading="confirmLoading"
     :footer="null"
     @ok="handleOk"
     @cancel="handleCancel"
@@ -15,7 +14,8 @@
         <wang-editor v-model="detail"
                      :isClear="isClear"
                      :editable="false"
-                     @change="change">
+                     @change="change"
+                     class="editor">
 
         </wang-editor>
       </div>
@@ -26,7 +26,7 @@
 
 <script>
   import WangEditor from "@/components/WangEditor";
-  import {getAction} from "@/api/manage";
+  import { postAction } from "@/api/manage";
 
   export default {
     name: "EditorTextModal",
@@ -42,35 +42,34 @@
           list: '/v1/simulation/interbus/list.g',
         },
         isClear: false,
-        detail: "<p>这是很nb</p><p>试验下换行</p>",
+        detail: "",
+        url: {
+          detail: '/v1/enterGrid/datFind.g',
+        }
       }
     },
     created() {},
     methods: {
-      loadData(arg) {
-        // if (!this.url.list) {
-        //   this.$message.error('请设置url.list属性!')
-        //   return
-        // }
-        // //加载数据 若传入参数1则加载第一页的内容
-        // if (arg === 1) {
-        //   this.ipagination.current = 1
-        // }
-        // let params = this.getQueryParams()    // 查询条件
-        // params.companyId = this.companyId
-        // params.pageNum = params.pageNo
-        // params.sort = 'desc'
-        // params = Object.assign(params, this.reqParams)    // 合并主页传入的参数
-        // this.loading = true
-        // getAction(this.url.list, params).then((res) => {
-        //   let data = this.formatListData(res)
-        //   this.dataSource = data
-        //   this.loading = false
-        // })
+      loadData(fileName) {
+        if (!this.url.detail) {
+          this.$message.error('请设置url.detail属性!')
+          return
+        }
+
+        let params = {
+          'filename': fileName
+        }
+        this.confirmLoading = true
+        postAction(this.url.detail, params).then((res) => {
+          if (res.code === 0) {
+            this.detail = res.data
+          }
+          this.confirmLoading = false
+        })
       },
-      open() {
+      open(record) {
         this.visible = true
-        // this.loadData(1)
+        this.loadData(record.fileName)
       },
       change(val) {
         console.log(val)
@@ -90,5 +89,9 @@
 </script>
 
 <style scoped>
-
+.editor {
+  width: 100%;
+  height: 600px;
+  overflow-y: auto;
+}
 </style>

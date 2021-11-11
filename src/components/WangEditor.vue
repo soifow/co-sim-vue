@@ -1,6 +1,6 @@
 <template>
   <div class="editor">
-<!--    <div ref="toolbar" class="toolbar" />-->
+    <div ref="toolbar" class="toolbar" />
     <div ref="editor" class="text" />
   </div>
 </template>
@@ -62,6 +62,7 @@
     methods: {
       setEditor() {
         this.editor = new E(this.$refs.toolbar, this.$refs.editor)
+        // this.editor = new E(this.$refs.editor)
         this.editor.config.uploadImgShowBase64 = false // base 64 存储图片
         this.editor.config.uploadImgServer = 'http://otp.cdinfotech.top/file/upload_images'// 配置服务器端地址
         this.editor.config.uploadImgHeaders = { }// 自定义 header
