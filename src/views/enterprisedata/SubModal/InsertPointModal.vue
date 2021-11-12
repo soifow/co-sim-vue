@@ -16,7 +16,7 @@
         <a-table
           size="middle"
           bordered
-          rowKey="id"
+          rowKey="rowIndex"
           :columns="columns"
           :dataSource="dataSource"
           :pagination="ipagination"
@@ -30,10 +30,8 @@
 </template>
 
 <script>
-  import { getAction } from '@/api/manage'
+  import { postAction } from '@/api/manage'
   // import pick from 'lodash.pick'
-  // import JTreeSelectWindow from '@/components/jeecg/JTreeSelectWindow'
-  // import JImageUploadBatch from '@/components/jeecg/JImageUploadBatch'
   import { mapGetters } from 'vuex'
   import { ListMixin } from '@/mixins/ListMixin'
 
@@ -41,12 +39,12 @@
     name: 'InsertPointWindow',
     mixins: [ListMixin],
     components: {
-      // JTreeSelectWindow,
-      // JImageUploadBatch
+
     },
     data() {
       return {
         title: '接入点数',
+        fileId: 0,
         visible: false,
         labelCol: { xs: { span: 24 }, sm: { span: 5 } },
         wrapperCol: { xs: { span: 24 }, sm: { span: 16 } },
@@ -87,7 +85,7 @@
           },
         ],
         url: {
-          list: '/v1/simulation/interbus/list.g',
+          list: '/v1/enterGrid/dinFind.g',
         },
       }
     },
@@ -96,34 +94,29 @@
     },
     created() {},
     methods: {
-      loadData(arg) {
+      loadData() {
         if (!this.url.list) {
           this.$message.error('请设置url.list属性!')
           return
         }
         //加载数据 若传入参数1则加载第一页的内容
-        if (arg === 1) {
-          this.ipagination.current = 1
-        }
-        let params = this.getQueryParams()    // 查询条件
-        params.companyId = this.companyId
-        params.pageNum = params.pageNo
-        params.sort = 'desc'
-        params = Object.assign(params, this.reqParams)    // 合并主页传入的参数
+        let params = this.getQueryParams()          // 查询条件
+        params.id = this.fileId
+
         this.loading = true
-        getAction(this.url.list, params).then((res) => {
-          let data = this.formatListData(res)
-          this.dataSource = data
+        postAction(this.url.list, params).then((res) => {
+          if (res.code === 0) {
+            let data = this.formatListData(res.data)
+            this.dataSource = data
+          }
+
           this.loading = false
         })
       },
       open(record) {
         this.visible = true
-        this.reqParams = {
-          thegrid: record.gridId,
-          theproject: record.projectId,
-        }
-        this.loadData(1)
+        this.fileId = record.id
+        this.loadData()
       },
       close() {
         this.$emit('close')
@@ -140,11 +133,11 @@
         if (response.length) {
           response.forEach(resp => {
             let row = {}
-            row['id'] = resp.id           // update接口使用的
-            row['enterprisePtName'] = resp.inbusname   // 企业接入点名称
-            row['enterprisePtVoltage'] = resp.inbus     // 企业接入点电压
-            row['netPtName'] = resp.stname            // 电网接入点名称
-            row['netPtVoltage'] = resp.exname         // 电网接入点电压
+            // row['id'] = resp.id                         // update接口使用的
+            row['enterprisePtName'] = resp.inname       // 企业接入点名称
+            row['enterprisePtVoltage'] = resp.invbase   // 企业接入点电压
+            row['netPtName'] = resp.outname             // 电网接入点名称
+            row['netPtVoltage'] = resp.outvbase         // 电网接入点电压
             result.push(row)
           })
         }
