@@ -285,7 +285,7 @@
           },
         ],
         url: {
-          list: '/v1/psdenternode/select.g',
+          list: '/v1/enterNode/select.g',
         },
       }
     },
@@ -336,7 +336,7 @@
       }
     },
     mounted() {
-      
+
     },
     methods: {
       loadData(arg) {
