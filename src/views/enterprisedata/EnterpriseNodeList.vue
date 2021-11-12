@@ -361,6 +361,7 @@
         postAction(this.url.list, params).then((res) => {
           if (res.code === 0) {
             this.formatEnterpriseNodeFormData(res.data)
+            this.updateData()
             let data = this.formatEnterpriseNodeListData(res.data.records)
             this.dataSource = data
             this.ipagination.total = res.data.total
@@ -463,6 +464,29 @@
         }
 
         return result
+      },
+      // 生成更新form使用的对象
+      getUpdateObj(keys) {
+        let result = {}
+        if (keys === null || keys === undefined) {    // 若未传特定更新的key那么整个tab的form都更新
+          keys = Object.keys(this.formData)
+        }
+        for (let key of keys) {
+          // card字段对应卡片子弹窗，tableItems不是表单form项未做字段绑定, modelValue在UI不显示,更新表单域不涉及这些
+          if (key !== 'card' &&
+            key !== 'tableItems' &&
+            key !== 'modelValue') {
+            result[key] = this.formData[key]
+          }
+        }
+        return result
+      },
+      // 更新表单域的数据（指定参数时只更新数组内给定的key值，不传参时整个tab一起更新）
+      // 参数为数组，数组由字符串组成，每个字符串对应form中各个控件的id
+      updateData(keys = null) {
+        this.$nextTick(() => {
+          this.form.setFieldsValue(this.getUpdateObj(keys))
+        })
       },
       // 主表格时间显示格式化
       formatTableTimeStr(timeStamp, defaultDesc) {
