@@ -370,17 +370,17 @@
         this.$refs.editorTextModal.open(record)
       },
       showOtherDataFileModal(record) {
-        this.$refs.otherDataFilesModal.open(record)
+        this.$refs.otherDataFilesModal.open(record, 1)
       },
       showResultFileModal(record) {
-        // this.$refs.calcResultWindow.open(record)
+        this.$refs.otherDataFilesModal.open(record, 2)
       },
       calcActionInvoked(record) {
         // to do 根据当前用户是否允许自动计算的状态决定本列是否允许操作
         // 触发计算动作api接口
       },
       showOtherNetFileModal(record) {
-        // this.$refs.calcResultWindow.open(record)
+        this.$refs.otherDataFilesModal.open(record, 3)
       },
       // 创建一条企业数据弹窗的回调
       userAddAnEnterpriseData(values) {

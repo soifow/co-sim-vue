@@ -5,6 +5,7 @@
     :width="1000"
     :visible="visible"
     :confirmLoading="confirmLoading"
+    :destroyOnClose="true"
     @ok="handleOk"
     @cancel="handleCancel"
     cancelText="关闭"
@@ -15,7 +16,7 @@
         <a-table
           size="middle"
           bordered
-          rowKey="id"
+          rowKey="filename"
           :columns="columns"
           :dataSource="dataSource"
           :pagination="false"
@@ -34,10 +35,8 @@
 </template>
 
 <script>
-  import { getAction } from '@/api/manage'
+  import { postAction } from '@/api/manage'
   // import pick from 'lodash.pick'
-  // import JTreeSelectWindow from '@/components/jeecg/JTreeSelectWindow'
-  // import JImageUploadBatch from '@/components/jeecg/JImageUploadBatch'
   import { mapGetters } from 'vuex'
   import { ListMixin } from '@/mixins/ListMixin'
 
@@ -45,12 +44,12 @@
     name: 'OtherDataFilesWindow',
     mixins: [ListMixin],
     components: {
-      // JTreeSelectWindow,
-      // JImageUploadBatch
+
     },
     data() {
       return {
-        title: '其他数据文件',
+        title: this.getModalTitle(this.modalType),
+        modalType: 0,   // 弹窗类型
         visible: false,
         labelCol: { xs: { span: 24 }, sm: { span: 5 } },
         wrapperCol: { xs: { span: 24 }, sm: { span: 16 } },
@@ -70,11 +69,6 @@
             },
           },
           {
-            title: '文件说明',
-            align: 'center',
-            dataIndex: 'fileDesc',
-          },
-          {
             title: '文件名称',
             align: 'center',
             dataIndex: 'fileName',
@@ -88,13 +82,21 @@
           },
         ],
         url: {
-          list: '/v1/simulation/joint/datafile.g',
+          list: '/v1/enterGrid/otherFind.g',
           download: '/v1/simulation/joint/download.g',
         },
       }
     },
     computed: {
       ...mapGetters(['userInfo','teamInfo']),
+    },
+    watch: {
+      modalType: {   // 监听弹窗类型变化，对弹窗的标题、table列定义等进行动态修改（解决弹窗被主页加载后初始化信息延迟的问题）
+        handler(newVal, oldVal) {
+          this.title = this.getModalTitle(newVal)   // 更新标题
+        },
+        deep: true,
+      }
     },
     created() {},
     methods: {
@@ -105,9 +107,10 @@
         }
 
         this.loading = true
-        getAction(this.url.list, this.reqParams).then((res) => {
-          if (res.success) {
-            let data = this.formatListData(res.result)
+        postAction(this.url.list, this.reqParams).then((res) => {
+          if (res.code === 0) {
+            console.log(res)
+            let data = this.formatListData(res.data)
             this.dataSource = data
           } else {
             this.$message.error(`${res.message}`)
@@ -118,10 +121,12 @@
           this.$message.error(`${err}`)
         })
       },
-      open(record) {
+      open(record, type) {
+        this.modalType = type
         this.visible = true
         this.reqParams = {
           id: record.id,
+          tasktype: type
         }
         this.loadData()
       },
@@ -141,12 +146,24 @@
           response.forEach(resp => {
             let row = {}
             row['fileName'] = resp.filename           // 文件名
-            row['filePath'] = resp.filepath           // 文件下载接口使用的参数
-            row['fileDesc'] = resp.filedesc           // 文件描述信息
+            row['filePath'] = resp.url           // 文件下载接口使用的参数
             result.push(row)
           })
         }
         return result
+      },
+      getModalTitle(modalType) {
+        console.log(`modalType = ${modalType}`)
+        switch (modalType) {
+          case 1:
+            return '其他数据文件'
+          case 2:
+            return '计算结果文件'
+          case 3:
+            return '其他电网数据文件'
+          default:
+            return '标题'
+        }
       },
     },
   }
