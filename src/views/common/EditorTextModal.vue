@@ -38,9 +38,6 @@
         title: '文件预览',
         visible: false,
         confirmLoading: false,
-        url: {
-          list: '/v1/simulation/interbus/list.g',
-        },
         isClear: false,
         detail: "",
         url: {
@@ -50,14 +47,14 @@
     },
     created() {},
     methods: {
-      loadData(fileName) {
+      loadData(fileId) {
         if (!this.url.detail) {
           this.$message.error('请设置url.detail属性!')
           return
         }
 
         let params = {
-          'filename': fileName
+          'id': fileId
         }
         this.confirmLoading = true
         postAction(this.url.detail, params).then((res) => {
@@ -69,7 +66,7 @@
       },
       open(record) {
         this.visible = true
-        this.loadData(record.fileName)
+        this.loadData(record.id)
       },
       change(val) {
         console.log(val)

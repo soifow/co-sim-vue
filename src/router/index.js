@@ -12,7 +12,7 @@ const routes = [
     component: EnterpriseDataPage,
   },
   {
-    path: '/enterprisenode/:filename',
+    path: '/enterprisenode/:fileid',
     name: 'EnterpriseNode',
     component: EnterpriseNodeList,
     props: true,

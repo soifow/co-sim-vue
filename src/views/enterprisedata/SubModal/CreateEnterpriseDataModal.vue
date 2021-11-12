@@ -149,12 +149,14 @@
           2: [
             {
               'id': 1,
+              'fileId': '',
               'fileName': '',
               'fileDesc': 'DAT文件',
               'fileSuffix': 'dat',
             },
             {
               'id': 2,
+              'fileId': '',
               'fileName': '',
               'fileDesc': 'din文件',
               'fileSuffix': 'din',
@@ -163,6 +165,7 @@
           6: [
             {
               'id': 1,
+              'fileId': '',
               'fileName': '',
               'fileDesc': 'DAT文件',
               'fileSuffix': 'dat',
@@ -171,6 +174,7 @@
           9: [
             {
               'id': 1,
+              'fileId': '',
               'fileName': '',
               'fileDesc': 'BSE文件',
               'fileSuffix': 'bse',
@@ -263,7 +267,7 @@
         this.loading = true
 
         let params = {
-          filenames: this.getAllFilesName(this.taskType),
+          id: this.getIdWithTaskType(this.taskType),
           tasktype: this.taskType,
         }
         params = Object.assign(params, this.reqParams)
@@ -302,11 +306,21 @@
       //   return result
       // },
       // 获取当前任务类型所有已上传的文件名称
-      getAllFilesName(type) {
-        let result = []
-        this.fileConfigs[type].forEach(item => {
-          if (item.fileName.length) {
-            result.push(item.fileName)
+      // getAllFilesName(type) {
+      //   let result = []
+      //   this.fileConfigs[type].forEach(item => {
+      //     if (item.fileName.length) {
+      //       result.push(item.fileName)
+      //     }
+      //   })
+      //   return result
+      // },
+      getIdWithTaskType(type) {
+        let result = ''
+        this.fileConfigs[type].some(item => {
+          if (item.fileId) {
+            result = item.fileId
+            return true
           }
         })
         return result
@@ -332,7 +346,7 @@
           this.$message.error(`上传文件格式错误，需要上传${record.fileSuffix}格式的文件`);
         }
         this.uploadPosInfo = Object.assign(this.uploadPosInfo, {
-          fileId: record.id,
+          id: record.id,
         })   // 记录当前哪个位置在上传（为了将接口返回的文件名记录在正确的位置）
         return isRightType
       },
@@ -342,7 +356,7 @@
           console.log(info.file, info.fileList)
         }
         if (info.file.status === 'done') {
-          this.$message.success(`${record.fileName} 文件上传成功`)    // 展示UI显示的文件名而不是用户本地文件名（服务端文件名）
+          this.$message.success(`${info.file.name} 文件上传成功`)    // 展示用户本地所选择的文件名
           // this.loadData()         // 重新刷新本页数据（主要为了获取刚上传的文件的下载路径）
         } else if (info.file.status === 'error') {
           this.$message.error(`${info.file.name} 文件上传失败`)   // 展示用户本地所选择的文件名
@@ -359,8 +373,9 @@
         this.uploadFile(form).then(res => {
           if (res.code === 0) {
             this.fileConfigs[this.taskType].some(item => {
-              if (item.id === this.uploadPosInfo['fileId']) {
-                item.fileName = res.data
+              if (item.id === this.uploadPosInfo['id']) {
+                item.fileId = res.data
+                item.fileName = file.file.name
                 return true
               }
             })

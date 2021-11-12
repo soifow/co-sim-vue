@@ -285,7 +285,6 @@
     },
     methods: {
       loadData(arg) {
-        console.log('in loadData from enterPriseData.vue')
         if (!this.url.list) {
           this.$message.error('请设置url.list属性!')
           return
@@ -365,7 +364,7 @@
         this.$refs.insertPointModal.open(record)
       },
       showNodeInfoModal(record) {
-        this.$router.push({ name:'EnterpriseNode', params: { 'filename': record.fileName } })
+        this.$router.push({ name:'EnterpriseNode', params: { 'fileid': record.id } })
       },
       showNetFileModal(record) {
         this.$refs.editorTextModal.open(record)
@@ -400,7 +399,7 @@
             rowObj['enterprise'] = resp.enterprise        // 所属企业
             rowObj['userName'] = resp.user            // 所属用户
             rowObj['theProject'] = resp.theproject    // 所属工程
-            rowObj['theJob'] = resp.theJob            // 所属作业
+            rowObj['theJob'] = resp.thejob            // 所属作业
             rowObj['theTask'] = resp.thetask          // 所属任务
             rowObj['taskType'] = this.formatTaskTypeStr(resp.tasktype)        // 任务类型
             rowObj['dataType'] = this.formatDataTypeStr(resp.eqtype)          // 电网数据类型
@@ -414,10 +413,10 @@
             rowObj['netFileName'] = resp.netFileName       // 电网文件名称
             rowObj['calcState'] = this.formatCalcStatusStr(resp.calstas)            // 计算状态
             rowObj['finishTime'] = this.formatTableTimeStr(resp.endtime, '未完成')   // 完成时间
-            rowObj['otherDataFile'] = resp.otherDataFile         // 其他数据文件
-            rowObj['resultFile'] = resp.resultFile         // 计算结果文件
+            rowObj['otherDataFile'] = resp.otherfiles         // 其他数据文件
+            rowObj['resultFile'] = resp.resultfiles         // 计算结果文件
             rowObj['action'] = 'actionSlot'
-            rowObj['otherNetFile'] = resp.otherNetFile    // 其他电网数据文件
+            rowObj['otherNetFile'] = resp.enterfiles    // 其他电网数据文件
             rowObj = removePropertyOfNull(rowObj)         // 删除无效key
             result.push(rowObj)
           })

@@ -167,10 +167,10 @@
       HeaderView,
     },
     props: {
-      filename: {   // 路由传参
-        type: String,
+      fileid: {   // 路由传参
+        type: Number,
         required: false,
-        default: '',
+        default: 0,
       },
     },
     data() {
@@ -340,7 +340,7 @@
     },
     methods: {
       loadData(arg) {
-        console.log(`${this.filename}`)
+        console.log(`${this.fileid}`)
         if (!this.url.list) {
           this.$message.error('请设置url.list属性!')
           return
@@ -350,7 +350,7 @@
           this.ipagination.current = 1
         }
         let params = this.getQueryParams()          // 查询条件
-        params.filename = this.filename
+        params.id = this.fileid
         params.pageNum = params.pageNo
         // params.theproject = this.projectInfo.uid    // 工程id
         // params.pveruid = this.projectInfo.veruid    // 工程版本
