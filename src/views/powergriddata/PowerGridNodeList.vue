@@ -6,8 +6,8 @@
 
     <a-card>
       <a-form :form="form"
-            :label-col="labelCol"
-            :wrapper-col="wrapperCol">
+              :label-col="labelCol"
+              :wrapper-col="wrapperCol">
 
         <!-- 第一行 -->
         <a-row :gutter="0">
@@ -30,8 +30,8 @@
           </a-col>
 
           <a-col :span="6">
-            <a-form-item label="所属企业">
-              <a-input v-decorator="['enterprise', ctrlOptions.enterprise]"
+            <a-form-item label="所属工程">
+              <a-input v-decorator="['project', ctrlOptions.project]"
                        class="modal-input"
                        disabled />
 
@@ -39,8 +39,8 @@
           </a-col>
 
           <a-col :span="6">
-            <a-form-item label="所属用户">
-              <a-input v-decorator="['user', ctrlOptions.user]"
+            <a-form-item label="数据说明">
+              <a-input v-decorator="['dataDesc', ctrlOptions.dataDesc]"
                        class="modal-input"
                        disabled />
 
@@ -76,6 +76,20 @@
 
             </a-form-item>
           </a-col>
+
+          <a-col :span="6">
+            <a-form-item label="节点类型">
+              <a-select v-decorator="['nodeType', ctrlOptions.nodeType]">
+                <a-select-option :value="1">
+                  类型1
+                </a-select-option>
+                <a-select-option :value="2">
+                  类型2
+                </a-select-option>
+              </a-select>
+
+            </a-form-item>
+          </a-col>
         </a-row>
       </a-form>
 
@@ -95,12 +109,6 @@
             :scroll="{ x: 1500 }"
           >
 
-            <!--          <template slot="taskStatus" slot-scope="text, record, index">-->
-            <!--            <span :style="{'color': taskStatusStrColor(record.taskStatus), 'font-weight': 'bold'}">-->
-            <!--              {{record.taskStatusStr}}-->
-            <!--            </span>-->
-            <!--          </template>-->
-
           </a-table>
         </a-col>
       </a-row>
@@ -118,8 +126,8 @@
   import HeaderView from "@/views/header/HeaderView";
 
   export default {
-    description: '这是企业节点信息页面',
-    name: "EnterpriseNodeList",     // 企业数据页面
+    description: '这是电网节点信息页面',
+    name: "PowerGridNodeList",     // 电网节点信息页面
     mixins: [ListMixin],
     components: {
       HeaderView,
@@ -133,18 +141,19 @@
     },
     data() {
       return {
-        title: '企业节点信息',
+        title: '电网节点信息',
         labelCol:  {span: 9, offset: 0},
         wrapperCol: {span: 13, offset: 1},
         form: this.$form.createForm(this),
         formData: {
           fileNo: '测试文件编号',
           fileName: '测试文件名',
-          enterprise: '测试企业名',
-          user: '测试用户名',
+          project: '测试工程名',
+          dataDesc: '测试数据说明',
           totalLoad: '100',
           totalPower: '200.2',
           totalCompensate: '300.3',
+          nodeType: 1,
         },
         ctrlOptions: {        // 定义空对象，在created中定义初始值
           // 在这里直接引用this.formData.name之类的会报错，因为formData执行到这里时还未被创建，对undefined的取属性直接报错
@@ -276,11 +285,11 @@
         fileName: {   // 文件名称
           initialValue: this.formData.fileName,
         },
-        enterprise: {    // 所属企业
-          initialValue: this.formData.enterprise,
+        project: {    // 所属工程
+          initialValue: this.formData.project,
         },
-        user: {   // 所属用户
-          initialValue: this.formData.user,
+        dataDesc: {   // 数据说明
+          initialValue: this.formData.dataDesc,
         },
         totalLoad: {   // 总负荷
           initialValue: this.formData.totalLoad,
@@ -290,6 +299,9 @@
         },
         totalCompensate: {   // 总补偿
           initialValue: this.formData.totalCompensate,
+        },
+        nodeType: {   // 节点类型
+          initialValue: this.formData.nodeType,
         },
       }
     },
@@ -318,9 +330,9 @@
         console.log(params)
         postAction(this.url.list, params).then((res) => {
           if (res.code === 0) {
-            this.formatEnterpriseNodeFormData(res.data)
+            this.formatPowerGridNodeFormData(res.data)
             this.updateData()
-            let data = this.formatEnterpriseNodeListData(res.data.records)
+            let data = this.formatPowerGridNodeListData(res.data.records)
             this.dataSource = data
             this.ipagination.total = res.data.total
           }
@@ -356,12 +368,12 @@
         //     'otherNetFile': 5,
         //   },
         // ]
-        // this.dataSource = this.formatEnterpriseNodeListData(testData)
+        // this.dataSource = this.formatPowerGridNodeListData(testData)
         // this.ipagination.total = 1
         // 测试代码结束
       },
-      // 企业节点信息 - 表头部分
-      formatEnterpriseNodeFormData(response) {
+      // 电网节点信息 - 表头部分
+      formatPowerGridNodeFormData(response) {
         this.formData.fileNo = response.fileid
         this.formData.fileName = response.filename
         this.formData.enterprise = response.enterprise
@@ -370,8 +382,8 @@
         this.formData.totalPower = response.totalgen
         this.formData.totalCompensate = response.totalqcomp
       },
-      // 企业节点信息 - 主表格获取数据组装
-      formatEnterpriseNodeListData(response) {
+      // 电网节点信息 - 主表格获取数据组装
+      formatPowerGridNodeListData(response) {
         let result = []
         console.log(response)
         if (response.length) {

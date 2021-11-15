@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 import EnterpriseDataPage from '@/views/enterprisedata/EnterpriseData'
 import EnterpriseNodeList from "@/views/enterprisedata/EnterpriseNodeList";
 import PowerGridDataPage from "@/views/powergriddata/PowerGridData";
+import PowerGridNodeList from "@/views/powergriddata/PowerGridNodeList";
 
 Vue.use(VueRouter)
 
@@ -22,6 +23,12 @@ const routes = [
     path: '/powergridlist',
     name: 'PowerGridDataList',
     component: PowerGridDataPage,
+  },
+  {
+    path: '/powergridnode/:fileid',
+    name: 'PowerGridNode',
+    component: PowerGridNodeList,
+    props: true,
   },
   {
     path: '/about',

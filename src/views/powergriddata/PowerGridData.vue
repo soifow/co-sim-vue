@@ -133,6 +133,7 @@
             align: 'center',
             width: 120,
             dataIndex: 'nodeNum',
+            scopedSlots: { customRender: 'nodeNum' },
           },
         ],
         url: {
@@ -232,7 +233,7 @@
       //   this.$refs.insertPointModal.open(record)
       // },
       showNodeInfoModal(record) {
-        this.$router.push({ name:'EnterpriseNode', params: { 'fileid': record.id } })
+        this.$router.push({ name:'PowerGridNode', params: { 'fileid': record.id } })
       },
       // 创建一条企业数据弹窗的回调
       userAddAnEnterpriseData(values) {
