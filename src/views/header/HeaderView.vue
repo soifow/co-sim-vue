@@ -90,10 +90,10 @@
             // to do 弹窗
             break
           case 'netData':   // 电网数据
-            // to do 路由跳转
+            this.$router.push({ name:'PowerGridDataList', /* params: { 'fileid': record.id } */ })
             break
           case 'enterpriseData':  // 企业数据
-            // to do 路由跳转
+            this.$router.push({ name:'MainPage', /* params: { 'fileid': record.id } */ })
             break
           case 'setting':   // 设置
             this.$refs.settingModal.open()

@@ -343,15 +343,6 @@
         // this.ipagination.total = 1
         // 测试代码结束
       },
-      // handleMenuClick(e) {
-      //   if (e.key == 1) {
-      //     this.batchDel()
-      //   } else if (e.key == 2) {
-      //     this.batchFrozen(2)
-      //   } else if (e.key == 3) {
-      //     this.batchFrozen(1)
-      //   }
-      // },
       addOne() {
         // 新增按钮动作
         console.log('新增一行数据的动作')
