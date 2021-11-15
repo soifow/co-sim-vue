@@ -23,12 +23,12 @@
                            @click="handleButtonClick">
           UserName
           <a-menu slot="overlay" @click="handleMenuClick">
-            <a-menu-item key="1"> <a-icon type="profile" /> 用户信息 </a-menu-item>
-            <a-menu-item key="2"> <a-icon type="edit" /> 修改密码 </a-menu-item>
-            <a-menu-item key="3"> <a-icon type="database" /> 电网数据 </a-menu-item>
-            <a-menu-item key="4"> <a-icon type="database" /> 企业数据 </a-menu-item>
-            <a-menu-item key="5"> <a-icon type="setting" /> 账号设置 </a-menu-item>
-            <a-menu-item key="6"> <a-icon type="poweroff" /> 退出登录 </a-menu-item>
+            <a-menu-item key="profile"> <a-icon type="profile" /> 用户信息 </a-menu-item>
+            <a-menu-item key="editPwd"> <a-icon type="edit" /> 修改密码 </a-menu-item>
+            <a-menu-item key="netData"> <a-icon type="database" /> 电网数据 </a-menu-item>
+            <a-menu-item key="enterpriseData"> <a-icon type="database" /> 企业数据 </a-menu-item>
+            <a-menu-item key="setting"> <a-icon type="setting" /> 账号设置 </a-menu-item>
+            <a-menu-item key="logout"> <a-icon type="poweroff" /> 退出登录 </a-menu-item>
           </a-menu>
           <a-icon slot="icon" type="user" />
         </a-dropdown-button>
@@ -37,15 +37,20 @@
     </a-row>
 
     <a-divider />
+
+    <setting-modal ref="settingModal" />
+
   </div>
 </template>
 
 <script>
+  import SettingModal from "@/views/user/SettingModal";
+
   export default {
     description: '这是顶部共享控件',
     name: "HeaderView",
     components: {
-
+      SettingModal,
     },
     props: {
       pageTitle: {
@@ -75,8 +80,30 @@
       handleButtonClick(e) {
         console.log('click left button', e);
       },
+      // 菜单项点击事件
       handleMenuClick(e) {
-        console.log('click', e);
+        switch (e.key) {
+          case 'profile':   // 用户信息
+            // to do 弹窗
+            break
+          case 'editPwd':   // 修改密码
+            // to do 弹窗
+            break
+          case 'netData':   // 电网数据
+            // to do 路由跳转
+            break
+          case 'enterpriseData':  // 企业数据
+            // to do 路由跳转
+            break
+          case 'setting':   // 设置
+            this.$refs.settingModal.open()
+            break
+          case 'logout':    // 退出登录
+            // to do 退出确认弹窗
+            break
+          default:
+            break
+        }
       },
     },
   }
