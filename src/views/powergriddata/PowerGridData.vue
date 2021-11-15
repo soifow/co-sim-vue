@@ -5,37 +5,35 @@
                  :add-btn-enable="true"
                  @addOneBtnInvoked="addOne" />
 
-    <a-row>
-      <a-col :span="24">
-        <!--        :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"-->
-        <a-table
-          ref="table"
-          bordered
-          size="middle"
-          rowKey="id"
-          :columns="columns"
-          :dataSource="dataSource"
-          :pagination="ipagination"
-          :loading="loading"
-          @change="handleTableChange"
-          :scroll="{ x: 1500 }"
-        >
+    <a-card>
+      <!--        :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"-->
+      <a-table
+        ref="table"
+        bordered
+        size="middle"
+        rowKey="id"
+        :columns="columns"
+        :dataSource="dataSource"
+        :pagination="ipagination"
+        :loading="loading"
+        @change="handleTableChange"
+        :scroll="{ x: 1500 }"
+      >
 
-          <template slot="fileName" slot-scope="text, record, index">
-            <a @click="showFileTextModal(record)">{{record.fileName}}</a>
-          </template>
+        <template slot="fileName" slot-scope="text, record, index">
+          <a @click="showFileTextModal(record)">{{record.fileName}}</a>
+        </template>
 
-<!--          <template slot="pointNum" slot-scope="text, record, index">-->
-<!--            <a @click="showPointInfoModal(record)">{{record.pointNum}}</a>-->
-<!--          </template>-->
+        <!--          <template slot="pointNum" slot-scope="text, record, index">-->
+        <!--            <a @click="showPointInfoModal(record)">{{record.pointNum}}</a>-->
+        <!--          </template>-->
 
-          <template slot="nodeNum" slot-scope="text, record, index">
-            <a @click="showNodeInfoModal(record)">{{record.nodeNum}}</a>
-          </template>
+        <template slot="nodeNum" slot-scope="text, record, index">
+          <a @click="showNodeInfoModal(record)">{{record.nodeNum}}</a>
+        </template>
 
-        </a-table>
-      </a-col>
-    </a-row>
+      </a-table>
+    </a-card>
 
     <create-enterprise-data-modal ref="createEnterpriseDataModal"
                                   @addAnData="userAddAnEnterpriseData" />

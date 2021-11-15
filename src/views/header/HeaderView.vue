@@ -36,7 +36,7 @@
       </a-col>
     </a-row>
 
-    <a-divider />
+<!--    <a-divider />-->
 
     <setting-modal ref="settingModal" />
 

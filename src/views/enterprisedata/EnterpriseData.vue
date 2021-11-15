@@ -5,73 +5,71 @@
                  :add-btn-enable="true"
                  @addOneBtnInvoked="addOne" />
 
-    <a-row>
-      <a-col :span="24">
-<!--        :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"-->
-        <a-table
-          ref="table"
-          bordered
-          size="middle"
-          rowKey="id"
-          :columns="columns"
-          :dataSource="dataSource"
-          :pagination="ipagination"
-          :loading="loading"
-          @change="handleTableChange"
-          :scroll="{ x: 1500 }"
-        >
+    <a-card>
+      <!--        :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"-->
+      <a-table
+        ref="table"
+        bordered
+        size="middle"
+        rowKey="id"
+        :columns="columns"
+        :dataSource="dataSource"
+        :pagination="ipagination"
+        :loading="loading"
+        @change="handleTableChange"
+        :scroll="{ x: 1500 }"
+      >
 
-<!--          <template slot="taskStatus" slot-scope="text, record, index">-->
-<!--            <span :style="{'color': taskStatusStrColor(record.taskStatus), 'font-weight': 'bold'}">-->
-<!--              {{record.taskStatusStr}}-->
-<!--            </span>-->
-<!--          </template>-->
+        <!--          <template slot="taskStatus" slot-scope="text, record, index">-->
+        <!--            <span :style="{'color': taskStatusStrColor(record.taskStatus), 'font-weight': 'bold'}">-->
+        <!--              {{record.taskStatusStr}}-->
+        <!--            </span>-->
+        <!--          </template>-->
 
-          <template slot="fileName" slot-scope="text, record, index">
-            <a @click="showFileTextModal(record)">{{record.fileName}}</a>
-          </template>
+        <template slot="fileName" slot-scope="text, record, index">
+          <a @click="showFileTextModal(record)">{{record.fileName}}</a>
+        </template>
 
-          <template slot="pointNum" slot-scope="text, record, index">
-            <a @click="showPointInfoModal(record)">{{record.pointNum}}</a>
-          </template>
+        <template slot="pointNum" slot-scope="text, record, index">
+          <a @click="showPointInfoModal(record)">{{record.pointNum}}</a>
+        </template>
 
-          <template slot="nodeNum" slot-scope="text, record, index">
-            <a @click="showNodeInfoModal(record)">{{record.nodeNum}}</a>
-          </template>
+        <template slot="nodeNum" slot-scope="text, record, index">
+          <a @click="showNodeInfoModal(record)">{{record.nodeNum}}</a>
+        </template>
 
-          <template slot="netFileName" slot-scope="text, record, index">
-            <a @click="showNetFileModal(record)">{{record.netFileName}}</a>
-          </template>
+        <template slot="netFileName" slot-scope="text, record, index">
+          <a @click="showNetFileModal(record)">{{record.netFileName}}</a>
+        </template>
 
-          <template slot="otherDataFile" slot-scope="text, record, index">
-            <a @click="showOtherDataFileModal(record)">共{{record.otherDataFile}}个文件</a>
-          </template>
+        <template slot="otherDataFile" slot-scope="text, record, index">
+          <a @click="showOtherDataFileModal(record)">共{{record.otherDataFile}}个文件</a>
+        </template>
 
-          <template slot="resultFile" slot-scope="text, record, index">
-            <a @click="showResultFileModal(record)">共{{record.resultFile}}个文件</a>
-          </template>
+        <template slot="resultFile" slot-scope="text, record, index">
+          <a @click="showResultFileModal(record)">共{{record.resultFile}}个文件</a>
+        </template>
 
-          <template slot="calculation" slot-scope="text, record, index">
-<!--            <a @click="showResultFileModal(record)">{{record.resultFile}}</a>-->
-            <a-button type="primary" @click="calcActionInvoked(record)">计算</a-button>
-          </template>
+        <template slot="calculation" slot-scope="text, record, index">
+          <!--            <a @click="showResultFileModal(record)">{{record.resultFile}}</a>-->
+          <a-button type="primary" @click="calcActionInvoked(record)">计算</a-button>
+        </template>
 
-          <template slot="otherNetFile" slot-scope="text, record, index">
-            <a @click="showOtherNetFileModal(record)">共{{record.otherNetFile}}个文件</a>
-          </template>
+        <template slot="otherNetFile" slot-scope="text, record, index">
+          <a @click="showOtherNetFileModal(record)">共{{record.otherNetFile}}个文件</a>
+        </template>
 
-<!--          <template slot="requirement" slot-scope="text, record, index">-->
-<!--            <a-tooltip trigger="click">-->
-<!--              <template slot="title">-->
-<!--                {{record.dataTooltip}}-->
-<!--              </template>-->
-<!--              <a>{{record.dataRequirement}}</a>-->
-<!--            </a-tooltip>-->
-<!--          </template>-->
+        <!--          <template slot="requirement" slot-scope="text, record, index">-->
+        <!--            <a-tooltip trigger="click">-->
+        <!--              <template slot="title">-->
+        <!--                {{record.dataTooltip}}-->
+        <!--              </template>-->
+        <!--              <a>{{record.dataRequirement}}</a>-->
+        <!--            </a-tooltip>-->
+        <!--          </template>-->
 
-        </a-table>
-      </a-col>
-    </a-row>
+      </a-table>
+    </a-card>
 
     <create-enterprise-data-modal ref="createEnterpriseDataModal"
                                   @addAnData="userAddAnEnterpriseData" />
