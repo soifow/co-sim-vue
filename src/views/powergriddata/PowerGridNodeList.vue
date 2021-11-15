@@ -79,7 +79,8 @@
 
           <a-col :span="6">
             <a-form-item label="节点类型">
-              <a-select v-decorator="['nodeType', ctrlOptions.nodeType]">
+              <a-select v-decorator="['nodeType', ctrlOptions.nodeType]"
+                        @change="nodeTypeSelectChanged">
                 <a-select-option :value="1">
                   类型1
                 </a-select-option>
@@ -371,6 +372,10 @@
         // this.dataSource = this.formatPowerGridNodeListData(testData)
         // this.ipagination.total = 1
         // 测试代码结束
+      },
+      // 节点类型下拉框值变化
+      nodeTypeSelectChanged(value) {
+        // to do 这里根据新的节点类型重新调用loadData方法刷新下发表格
       },
       // 电网节点信息 - 表头部分
       formatPowerGridNodeFormData(response) {
