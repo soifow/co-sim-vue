@@ -23,6 +23,7 @@
 
           </a-form-item>
         </a-col>
+
       </a-row>
 
       <a-row :gutter="0">
@@ -93,7 +94,8 @@
           // 在这里直接引用this.formData.name之类的会报错，因为formData执行到这里时还未被创建，对undefined的取属性直接报错
         },
         url: {
-          getInfo: '/v1/enterNode/select.g',
+          getInfo: '/v1/jointConfig/findOne.g',
+          updateInfo: '/v1/jointConfig/update.g',
         },
       }
     },
@@ -151,10 +153,29 @@
         this.visible = false
       },
       handleOk() {
+        Promise.all([
+          this.submitForm(),
+        ]).then((results) => {
+          let data = results[0]
+          console.log(data)
+        })
+
         this.close()    // 该功能暂时不实现
       },
       handleCancel() {
         this.close()
+      },
+      submitForm() {
+        let that = this;
+        return new Promise((resolve, reject) => {
+          that.form.validateFields((err, values) => {
+            if (!err) {
+              resolve(values)
+            } else {
+              reject(err)
+            }
+          })
+        })
       },
     },
   }
