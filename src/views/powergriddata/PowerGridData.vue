@@ -35,7 +35,7 @@
       </a-table>
     </a-card>
 
-    <create-enterprise-data-modal ref="createEnterpriseDataModal"
+    <create-power-grid-data-modal ref="createPowerGridDataModal"
                                   @addAnData="userAddAnEnterpriseData" />
     <editor-text-modal ref="editorTextModal" />
 
@@ -50,7 +50,7 @@
   import moment from "dayjs";
 
   import HeaderView from "@/views/header/HeaderView";
-  import CreateEnterpriseDataModal from "@/views/enterprisedata/SubModal/CreateEnterpriseDataModal";
+  import CreatePowerGridDataModal from "@/views/powergriddata/SubModal/CreatePowerGridDataModal";
   import EditorTextModal from "@/views/common/EditorTextModal";
 
   export default {
@@ -59,7 +59,7 @@
     mixins: [ListMixin],
     components: {
       HeaderView,
-      CreateEnterpriseDataModal,
+      CreatePowerGridDataModal,
       EditorTextModal,
     },
     data() {
@@ -224,7 +224,7 @@
       addOne() {
         // 新增按钮动作
         console.log('新增一行数据的动作')
-        this.$refs.createEnterpriseDataModal.open()
+        this.$refs.createPowerGridDataModal.open()
       },
       showFileTextModal(record) {
         this.$refs.editorTextModal.open(record)

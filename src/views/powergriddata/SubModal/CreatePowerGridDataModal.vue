@@ -15,7 +15,7 @@
         <a-row :gutter="0">
           <a-col :span="12" :offset="6">
             <a-form-item label="任务类型">
-<!--              <a-select :v-decorator="['taskType', ctrlOptions.taskType]">-->
+              <!--              <a-select :v-decorator="['taskType', ctrlOptions.taskType]">-->
               <a-select :defaultValue="taskType" @change="selectChanged">
                 <a-select-option :value="2">
                   潮流计算
@@ -32,32 +32,27 @@
           </a-col>
         </a-row>
 
-      </a-form>
+        <a-row>
+          <!-- table区域-begin -->
+          <a-table
+            size="middle"
+            bordered
+            rowKey="id"
+            :columns="columns"
+            :dataSource="dataSource"
+            :pagination="false"
+            :loading="loading"
+          >
 
-
-
-
-      <a-row>
-        <!-- table区域-begin -->
-        <a-table
-          size="middle"
-          bordered
-          rowKey="id"
-          :columns="columns"
-          :dataSource="dataSource"
-          :pagination="false"
-          :loading="loading"
-        >
-
-          <div slot="file" slot-scope="text, record">
+            <div slot="file" slot-scope="text, record">
             <span v-if="record.fileName">
               {{record.fileName}}
             </span>
-          </div>
+            </div>
 
-          <span slot="action" slot-scope="text, record">
+            <span slot="action" slot-scope="text, record">
 <!--            <a @click="handleDetail(record)">查看</a>-->
-<!--            <a-divider type="vertical" />-->
+              <!--            <a-divider type="vertical" />-->
             <a-upload :customRequest="customRequest"
                       :show-upload-list="false"
                       :before-upload="function(file) { return beforeUpload(file, record)}"
@@ -66,13 +61,71 @@
               <a :style="{color: !enableUpload ? 'gray' : ''}"
                  :disabled="!enableUpload"> 上传 </a>
             </a-upload>
-<!--            <a-divider type="vertical" />-->
-<!--            <a :href="`${url.download}?filepath=${record.filePath}`">下载</a>-->
+              <!--            <a-divider type="vertical" />-->
+              <!--            <a :href="`${url.download}?filepath=${record.filePath}`">下载</a>-->
           </span>
-        </a-table>
-        <!-- table区域-end -->
-      </a-row>
+          </a-table>
+          <!-- table区域-end -->
+        </a-row>
 
+        <a-row :gutter="0">
+          <a-col :span="12" :offset="6">
+            <a-form-item label="规划数据年份">
+              <a-input class="modal-input"
+                       :defaultValue="planYear"
+                       :disabled="dataType === 0" />
+
+            </a-form-item>
+
+          </a-col>
+        </a-row>
+
+        <a-row :gutter="0">
+          <a-col :span="12" :offset="6">
+            <a-form-item label="规划数据方式">
+              <!--              <a-select :v-decorator="['taskType', ctrlOptions.taskType]">-->
+              <a-select :defaultValue="planMode"
+                        @change="selectChanged"
+                        :disabled="dataType === 0">
+                <a-select-option :value="0">
+                  大方式
+                </a-select-option>
+                <a-select-option :value="1">
+                  小方式
+                </a-select-option>
+                <a-select-option :value="2">
+                  其他方式
+                </a-select-option>
+              </a-select>
+            </a-form-item>
+
+          </a-col>
+        </a-row>
+
+        <a-row :gutter="0">
+          <a-col :span="12" :offset="6">
+            <a-form-item label="数据类型">
+              <a-input class="modal-input"
+                       :defaultValue="dataType"
+                       disabled />
+
+            </a-form-item>
+
+          </a-col>
+        </a-row>
+
+        <a-row :gutter="0">
+          <a-col :span="12" :offset="6">
+            <a-form-item label="基准容量">
+              <a-input class="modal-input"
+                       :defaultValue="baseCapacity"
+                       disabled />
+
+            </a-form-item>
+
+          </a-col>
+        </a-row>
+      </a-form>
     </a-spin>
 
     <template slot="footer">
@@ -95,16 +148,20 @@
   import { ListMixin } from '@/mixins/ListMixin'
 
   export default {
-    name: 'CreateEnterpriseDataWindow',
+    name: 'CreatePowerGridDataWindow',
     mixins: [ListMixin],
     components: {
 
     },
     data() {
       return {
-        title: '新建企业数据',
+        title: '新建电网数据',
         visible: false,
-        taskType: 2,        // 创建任务类型
+        taskType: 2,
+        planYear: 2022,
+        planMode: 0,        // 创建规划数据方式
+        dataType: 0,        // 0-运行；1-规划
+        baseCapacity: 0,
         labelCol: { xs: { span: 24 }, sm: { span: 5 } },
         wrapperCol: { xs: { span: 24 }, sm: { span: 16 } },
         form: this.$form.createForm(this),
@@ -158,8 +215,8 @@
               'id': 2,
               'fileId': '',
               'fileName': '',
-              'fileDesc': 'din文件',
-              'fileSuffix': 'din',
+              'fileDesc': 'SWI文件',
+              'fileSuffix': 'swi',
             }
           ],
           6: [
@@ -270,7 +327,17 @@
           id: this.getIdWithTaskType(this.taskType),
           tasktype: this.taskType,
         }
+
+        if (this.dataType === 0) {    // 运行数据
+          this.reqParams['datatype'] = this.dataType
+          this.reqParams['sbase'] = this.baseCapacity
+        } else {
+          this.reqParams['planyear'] = this.planYear
+          this.reqParams['planmode'] = this.planMode
+        }
+
         params = Object.assign(params, this.reqParams)
+
         postAction(this.url.createTask, params).then(res => {
           if (res.code === 0) {
             if (res.data === true) {
@@ -379,6 +446,8 @@
                 return true
               }
             })
+            // to do 根据接口返回的数据更新数据类型和基准容量
+
             // 调用组件内方法（回调至this.handleUploadFileChange）, 设置为成功状态
             file.onSuccess(res, file.file)
             file.status = 'done'
@@ -422,5 +491,9 @@
     flex-direction: column;
     justify-content: space-between;
     margin-left: 15px;
+  }
+
+  /deep/ .ant-table-body {
+    margin-bottom: 25px;
   }
 </style>
