@@ -73,7 +73,8 @@
 
     <create-enterprise-data-modal ref="createEnterpriseDataModal"
                                   @addAnData="userAddAnEnterpriseData" />
-    <editor-text-modal ref="editorTextModal" />
+    <editor-text-modal ref="editorTextModal"
+                       :dat-type="0" />
     <insert-point-modal ref="insertPointModal" />
     <other-data-files-modal ref="otherDataFilesModal" />
 

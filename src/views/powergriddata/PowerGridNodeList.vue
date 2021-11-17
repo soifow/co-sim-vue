@@ -81,11 +81,29 @@
             <a-form-item label="节点类型">
               <a-select v-decorator="['nodeType', ctrlOptions.nodeType]"
                         @change="nodeTypeSelectChanged">
-                <a-select-option :value="1">
-                  类型1
+                <a-select-option value="all">
+                  全部
                 </a-select-option>
-                <a-select-option :value="2">
-                  类型2
+                <a-select-option value=" ">
+                  空节点
+                </a-select-option>
+                <a-select-option value="G">
+                  发电
+                </a-select-option>
+                <a-select-option value="G+L">
+                  发电+负荷
+                </a-select-option>
+                <a-select-option value="G+L+C">
+                  发电+负荷+补偿
+                </a-select-option>
+                <a-select-option value="L">
+                  负荷
+                </a-select-option>
+                <a-select-option value="L+C">
+                  负荷+补偿
+                </a-select-option>
+                <a-select-option value="C">
+                  补偿
                 </a-select-option>
               </a-select>
 
@@ -154,7 +172,7 @@
           totalLoad: '100',
           totalPower: '200.2',
           totalCompensate: '300.3',
-          nodeType: 1,
+          nodeType: 'all',
         },
         ctrlOptions: {        // 定义空对象，在created中定义初始值
           // 在这里直接引用this.formData.name之类的会报错，因为formData执行到这里时还未被创建，对undefined的取属性直接报错
@@ -253,7 +271,7 @@
           },
         ],
         url: {
-          list: '/v1/enterNode/select.g',
+          list: '/v1/outerNode/select.g',
         },
       }
     },
@@ -322,6 +340,7 @@
         }
         let params = this.getQueryParams()          // 查询条件
         params.id = this.fileid
+        params.nodetype = this.formData.nodeType    // 节点类型
         params.pageNum = params.pageNo
         // params.theproject = this.projectInfo.uid    // 工程id
         // params.pveruid = this.projectInfo.veruid    // 工程版本
@@ -375,17 +394,19 @@
       },
       // 节点类型下拉框值变化
       nodeTypeSelectChanged(value) {
-        // to do 这里根据新的节点类型重新调用loadData方法刷新下发表格
+        this.formData.nodeType = value
+        this.loadData(1)
       },
       // 电网节点信息 - 表头部分
       formatPowerGridNodeFormData(response) {
         this.formData.fileNo = response.fileid
         this.formData.fileName = response.filename
-        this.formData.enterprise = response.enterprise
-        this.formData.user = response.user
+        this.formData.project = response.project
+        this.formData.dataDesc = response.datamark
         this.formData.totalLoad = response.totalload
         this.formData.totalPower = response.totalgen
         this.formData.totalCompensate = response.totalqcomp
+        // this.formData.nodeType = response.nodetype
       },
       // 电网节点信息 - 主表格获取数据组装
       formatPowerGridNodeListData(response) {
@@ -404,7 +425,7 @@
             rowObj['Pgen'] = resp.pgen                // 有功发电
             rowObj['Qgen'] = resp.qgen                // 无功发电
             rowObj['compensate'] = resp.qcomp         // 无功补偿
-            rowObj['controlVoltage'] = resp.eqtype    // 控制电压
+            rowObj['controlVoltage'] = resp.vctrl     // 控制电压
             rowObj['PgenMax'] = resp.pgmax            // 最大有功发电
             rowObj['QgenMax'] = resp.qgmax            // 最大无功发电
             rowObj['QgenMin'] = resp.qgmin            // 最小无功发电

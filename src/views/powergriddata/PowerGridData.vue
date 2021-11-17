@@ -37,7 +37,8 @@
 
     <create-power-grid-data-modal ref="createPowerGridDataModal"
                                   @addAnData="userAddAnEnterpriseData" />
-    <editor-text-modal ref="editorTextModal" />
+    <editor-text-modal ref="editorTextModal"
+                       :dat-type="1" />
 
   </div>
 </template>
@@ -137,7 +138,7 @@
           },
         ],
         url: {
-          list: '/v1/enterGrid/select.g',
+          list: '/v1/outerGrid/select.g',
         },
       }
     },
@@ -249,12 +250,12 @@
             rowObj['id'] = resp.id                      // 该行对应结果的唯一id（计算结果这类子弹窗请求所需要的数据）
             rowObj['fileName'] = resp.name              // 文件名称
             rowObj['baseCapacity'] = resp.sbase         // 基准容量
-            rowObj['project'] = resp.theproject         // 所属工程
+            rowObj['project'] = resp.project            // 所属工程
             rowObj['powerGridDataType'] = this.formatDataTypeStr(resp.eqtype)       // 电网数据类型
             rowObj['runDataTime'] = this.formatTableTimeStr(resp.opertime)      // 运行数据时间
             rowObj['plan'] = resp.planyear                  // 规划数据年份
             rowObj['planDataType'] = this.formatPlanDataTypeStr(resp.planmode)    // 规划数据方式
-            rowObj['nodeNum'] = resp.enternodes              // 节点数
+            rowObj['nodeNum'] = resp.outernodes              // 节点数
             rowObj = removePropertyOfNull(rowObj)         // 删除无效key
             result.push(rowObj)
           })

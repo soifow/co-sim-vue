@@ -387,7 +387,7 @@
             rowObj['Pgen'] = resp.pgen                // 有功发电
             rowObj['Qgen'] = resp.qgen                // 无功发电
             rowObj['compensate'] = resp.qcomp         // 无功补偿
-            rowObj['controlVoltage'] = resp.eqtype    // 控制电压
+            rowObj['controlVoltage'] = resp.vctrl     // 控制电压
             rowObj['PgenMax'] = resp.pgmax            // 最大有功发电
             rowObj['QgenMax'] = resp.qgmax            // 最大无功发电
             rowObj['QgenMin'] = resp.qgmin            // 最小无功发电

@@ -73,7 +73,7 @@
             <a-form-item label="规划数据年份">
               <a-input class="modal-input"
                        :defaultValue="planYear"
-                       :disabled="dataType === 0" />
+                       :disabled="dataType === '运行'" />
 
             </a-form-item>
 
@@ -85,8 +85,7 @@
             <a-form-item label="规划数据方式">
               <!--              <a-select :v-decorator="['taskType', ctrlOptions.taskType]">-->
               <a-select :defaultValue="planMode"
-                        @change="selectChanged"
-                        :disabled="dataType === 0">
+                        :disabled="dataType === '运行'">
                 <a-select-option :value="0">
                   大方式
                 </a-select-option>
@@ -107,6 +106,7 @@
             <a-form-item label="数据类型">
               <a-input class="modal-input"
                        :defaultValue="dataType"
+                       :value="dataType"
                        disabled />
 
             </a-form-item>
@@ -119,6 +119,7 @@
             <a-form-item label="基准容量">
               <a-input class="modal-input"
                        :defaultValue="baseCapacity"
+                       :value="baseCapacity"
                        disabled />
 
             </a-form-item>
@@ -241,8 +242,8 @@
         url: {
           // list: '/v1/simulation/joint/outfile.g',
           // download: '/v1/simulation/joint/download.g',
-          uploadFile: '/v1/enterGrid/upload.g',
-          createTask: '/v1/enterGrid/insert.g',
+          uploadFile: '/v1/outerGrid/upload.g',
+          createTask: '/v1/outerGrid/insert.g',
         },
       }
     },
@@ -328,13 +329,13 @@
           tasktype: this.taskType,
         }
 
-        if (this.dataType === 0) {    // 运行数据
-          this.reqParams['datatype'] = this.dataType
-          this.reqParams['sbase'] = this.baseCapacity
-        } else {
-          this.reqParams['planyear'] = this.planYear
-          this.reqParams['planmode'] = this.planMode
-        }
+        // if (this.dataType === '运行') {    // 运行数据
+        //   this.reqParams['datatype'] = this.dataType
+        //   this.reqParams['sbase'] = this.baseCapacity
+        // } else {
+        //   this.reqParams['planyear'] = this.planYear
+        //   this.reqParams['planmode'] = this.planMode
+        // }
 
         params = Object.assign(params, this.reqParams)
 
@@ -441,8 +442,10 @@
           if (res.code === 0) {
             this.fileConfigs[this.taskType].some(item => {
               if (item.id === this.uploadPosInfo['id']) {
-                item.fileId = res.data
+                item.fileId = res.data.id
                 item.fileName = file.file.name
+                this.dataType = res.data.eqtype === 1 ? '规划' : '运行'
+                this.baseCapacity = res.data.sbase
                 return true
               }
             })

@@ -33,6 +33,13 @@
     components: {
       WangEditor
     },
+    props: {
+      datType: {   // 0-企业; 1-电网
+        type: Number,
+        required: false,
+        default: 0,
+      },
+    },
     data() {
       return {
         title: '文件预览',
@@ -54,7 +61,8 @@
         }
 
         let params = {
-          'id': fileId
+          'id': fileId,
+          'type': this.datType,
         }
         this.confirmLoading = true
         postAction(this.url.detail, params).then((res) => {
