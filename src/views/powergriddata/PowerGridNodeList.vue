@@ -347,7 +347,6 @@
         // params.userid = this.userInfo.id            // 提交用户id
 
         this.loading = true
-        console.log(params)
         postAction(this.url.list, params).then((res) => {
           if (res.code === 0) {
             this.formatPowerGridNodeFormData(res.data)
@@ -411,7 +410,6 @@
       // 电网节点信息 - 主表格获取数据组装
       formatPowerGridNodeListData(response) {
         let result = []
-        console.log(response)
         if (response.length) {
           response.forEach(resp => {
             let rowObj = {}     // 每行对应的数据结构

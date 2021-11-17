@@ -109,7 +109,6 @@
         this.loading = true
         postAction(this.url.list, this.reqParams).then((res) => {
           if (res.code === 0) {
-            console.log(res)
             let data = this.formatListData(res.data)
             this.dataSource = data
           } else {
@@ -153,7 +152,6 @@
         return result
       },
       getModalTitle(modalType) {
-        console.log(`modalType = ${modalType}`)
         switch (modalType) {
           case 1:
             return '其他数据文件'

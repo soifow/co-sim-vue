@@ -298,7 +298,6 @@
     },
     methods: {
       loadData(arg) {
-        console.log(`${this.fileid}`)
         if (!this.url.list) {
           this.$message.error('请设置url.list属性!')
           return
@@ -315,7 +314,6 @@
         // params.userid = this.userInfo.id            // 提交用户id
 
         this.loading = true
-        console.log(params)
         postAction(this.url.list, params).then((res) => {
           if (res.code === 0) {
             this.formatEnterpriseNodeFormData(res.data)
@@ -373,7 +371,6 @@
       // 企业节点信息 - 主表格获取数据组装
       formatEnterpriseNodeListData(response) {
         let result = []
-        console.log(response)
         if (response.length) {
           response.forEach(resp => {
             let rowObj = {}     // 每行对应的数据结构

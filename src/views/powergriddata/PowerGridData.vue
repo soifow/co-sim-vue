@@ -192,39 +192,9 @@
           }
           this.loading = false
         })
-
-        // 测试代码
-        // let testData = [
-        //   {
-        //     'id': '0',
-        //     'name': '文件名1',
-        //     'sbase': 120,
-        //     'enterprise': '企业名1',
-        //     'user': '用户名1',
-        //     'tasktype': 6,
-        //     'eqtype': 1,
-        //     'opertime': 1636338050734,
-        //     'planyear': 2022,
-        //     'planmode': 1,
-        //     'intercount': 10,
-        //     'rcvtime': 1636338070321,
-        //     'nodeNum': 24,
-        //     'dataFileNo': '4001',
-        //     'netFileName': '电网文件名1',
-        //     'calstas': 0,
-        //     'endtime': 1636338081368,
-        //     'otherDataFile': 2,
-        //     'resultFile': 3,
-        //     'otherNetFile': 5,
-        //   },
-        // ]
-        // this.dataSource = this.formatPowerGridListData(testData)
-        // this.ipagination.total = 1
-        // 测试代码结束
       },
       addOne() {
         // 新增按钮动作
-        console.log('新增一行数据的动作')
         this.$refs.createPowerGridDataModal.open()
       },
       showFileTextModal(record) {
@@ -243,7 +213,6 @@
       // 电网数据 - 主表格获取数据组装
       formatPowerGridListData(response) {
         let result = []
-        console.log(response)
         if (response.length) {
           response.forEach(resp => {
             let rowObj = {}     // 每行对应的数据结构

@@ -54,7 +54,6 @@ export const ListMixin = {
   },
   created() {
     if (!this.disableMixinCreated) {
-      console.log(' -- mixin created -- ')
       this.loadData();
       //初始化字典配置 在自己页面定义
       this.initDictConfig();
@@ -259,7 +258,7 @@ export const ListMixin = {
       if (this.selectedRowKeys && this.selectedRowKeys.length > 0) {
         param['selections'] = this.selectedRowKeys.join(",")
       }
-      console.log("导出参数",param)
+
       downFile(this.url.exportXlsUrl,param).then((data)=>{
         if (!data) {
           this.$message.warning("文件下载失败")

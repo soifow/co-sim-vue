@@ -171,7 +171,6 @@
           this.submitForm(),
         ]).then((results) => {
           let data = results[0]
-          console.log(data)
           let params = {
             id: this.formData.id,
             rcvdir: data.receiveDir,
@@ -200,7 +199,6 @@
         this.close()
       },
       formatSettingData(response) {
-        console.log(response)
         if (Object.keys(response).length) {
           this.formData['id'] = response.id                      // 该行对应结果的唯一id（计算结果这类子弹窗请求所需要的数据）
           this.formData.receiveDir = response.rcvdir             // 接收文件夹路径

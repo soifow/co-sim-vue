@@ -299,7 +299,6 @@
         // params.userid = this.userInfo.id            // 提交用户id
 
         this.loading = true
-        console.log(params)
         postAction(this.url.list, params).then((res) => {
           if (res.code === 0) {
             let data = this.formatEnterpriseListData(res.data.records)
@@ -344,7 +343,6 @@
       },
       addOne() {
         // 新增按钮动作
-        console.log('新增一行数据的动作')
         this.$refs.createEnterpriseDataModal.open()
       },
       showFileTextModal(record) {
@@ -379,7 +377,6 @@
       // 企业数据 - 主表格获取数据组装
       formatEnterpriseListData(response) {
         let result = []
-        console.log(response)
         if (response.length) {
           response.forEach(resp => {
             let rowObj = {}     // 每行对应的数据结构

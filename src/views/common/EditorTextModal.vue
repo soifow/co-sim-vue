@@ -77,7 +77,7 @@
         this.loadData(record.id)
       },
       change(val) {
-        console.log(val)
+        // do nothing.
       },
       close() {
         this.$emit('close')
