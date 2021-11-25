@@ -126,7 +126,7 @@
     },
     props: {
       fileid: {   // 路由传参
-        type: Number,
+        type: [Number, String],
         required: false,
         default: 0,
       },
@@ -456,4 +456,12 @@
 
 <style scoped>
   @import '~@assets/less/common.less';
+  
+  /* 修正表哥头部区域的间隙 */
+  /deep/ .ant-card-body {
+    padding-top: 12px;
+  }
+  /deep/ .ant-row.ant-form-item {
+    margin-bottom: 12px;
+  }
 </style>
