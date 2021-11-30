@@ -51,7 +51,6 @@
         </template>
 
         <template slot="calculation" slot-scope="text, record, index">
-          <!--            <a @click="showResultFileModal(record)">{{record.resultFile}}</a>-->
           <a-button type="primary" @click="calcActionInvoked(record)">计算</a-button>
         </template>
 
@@ -259,6 +258,7 @@
         ],
         url: {
           list: '/v1/enterGrid/select.g',
+          calc: '/v1/simulation/compute.g',
         },
       }
     },
@@ -366,6 +366,19 @@
       calcActionInvoked(record) {
         // to do 根据当前用户是否允许自动计算的状态决定本列是否允许操作
         // 触发计算动作api接口
+        let params = {
+          'id': record.id,
+        }
+        console.log(params)
+        postAction(this.url.calc, params).then((res) => {
+          if (res.status === 1) {
+            this.$message.success(`${res.msg}`)
+          } else {
+            this.$message.error(`${res.msg}`)
+          }
+        }).catch(err => {
+          this.$message.error(`${err}`)
+        })
       },
       showOtherNetFileModal(record) {
         this.$refs.otherDataFilesModal.open(record, 3)

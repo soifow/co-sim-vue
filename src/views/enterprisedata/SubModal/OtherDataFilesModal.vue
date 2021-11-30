@@ -24,9 +24,9 @@
         >
 
           <span v-if="record.fileType === 'pfe'" slot="action" slot-scope="text, record">
-            <a :href="`${url.download}?filepath=${record.filePath}`">下载</a>
+            <a :href="`${url.download}?filename=${record.fileName}&id=${record.id}`">下载</a>
             <a-divider type="vertical" />
-            <a @click="handleExtract(record)">提取</a>
+            <a :href="`${url.extract}?filename=${record.fileName}&id=${record.id}`">提取</a>
             <a-divider type="vertical" />
             <a @click="handleSend(record)">发送</a>
           </span>
@@ -147,7 +147,9 @@
         columns: this.getModalColumns(this.modalType),
         url: {
           list: '/v1/enterGrid/otherFind.g',
-          download: '/v1/simulation/joint/download.g',
+          download: '/co-sim/v1/enterGrid/outdownload.g',   // 在模版中直接用a标签发get请求，需要把baseURL写在这里，否则跨域跳转不起作用
+          extract: '/co-sim/v1/simulation/getpfe.g',
+          send: '/v1/enterGrid/putPfe.g',
         },
       }
     },
@@ -229,9 +231,10 @@
         if (response.length) {
           response.forEach(resp => {
             let row = {}
+            row['id'] = resp.id
             row['fileDesc'] = resp.filedesc       // 文件描述
             row['fileName'] = resp.filename       // 文件名
-            row['fileType'] = resp.filetype       // 文件类型
+            row['fileType'] = resp.filetype.toLowerCase()       // 文件类型
             row['filePath'] = resp.url            // 文件下载接口使用的参数
             result.push(row)
           })
@@ -254,24 +257,29 @@
         switch (modalType) {
           case 1:
             return otherColumns
-            break
           case 2:
             return resultColumns
-            break
           case 3:
             return powerColumns
-            break
           default:
             return otherColumns
         }
       },
-      // 提取按钮动作
-      handleExtract(record) {
-        console.log(`提取按钮${record}`)
-      },
       // 发送按钮动作
       handleSend(record) {
-        console.log(`发送按钮${record}`)
+        let params = {
+          'filename': record.fileName,
+          'id': record.id,
+        }
+        postAction(this.url.send, params).then((res) => {
+          if (res.code === 0) {
+            this.$message.success(`${res.msg}`)
+          } else {
+            this.$message.error(`${res.msg}`)
+          }
+        }).catch(err => {
+          this.$message.error(`${err}`)
+        })
       },
     },
   }
