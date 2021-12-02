@@ -97,7 +97,7 @@ module.exports = {
       //     }
       //   },
       '/co-sim': {
-        target: 'http://100.10.10.252:9005',   //'http://100.10.10.219:19001', //请求本地 需要swan-hosting后台项目
+        target: 'http://172.16.21.11:9005',   // 'http://100.10.10.252:9005', //请求本地 需要swan-hosting后台项目
         // ws: false,
         changeOrigin: true,
         pathRewrite: {

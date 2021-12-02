@@ -51,7 +51,9 @@
         </template>
 
         <template slot="calculation" slot-scope="text, record, index">
-          <a-button type="primary" @click="calcActionInvoked(record)">计算</a-button>
+          <a-button type="primary"
+                    @click="calcActionInvoked(record)"
+                    :disabled="record.calcState === 1">计算</a-button>
         </template>
 
         <template slot="otherNetFile" slot-scope="text, record, index">
@@ -219,7 +221,7 @@
             title: '计算状态',
             align: 'center',
             width: 120,
-            dataIndex: 'calcState',
+            dataIndex: 'calcStateDesc',
           },
           {
             title: '完成时间',
@@ -365,6 +367,7 @@
       },
       calcActionInvoked(record) {
         // to do 根据当前用户是否允许自动计算的状态决定本列是否允许操作
+        record.calcState = 1        // 将当前条目的计算状态设置为计算中（这样可以禁用计算按钮）
         // 触发计算动作api接口
         let params = {
           'id': record.id,
@@ -376,6 +379,8 @@
           } else {
             this.$message.error(`${res.msg}`)
           }
+
+          this.loadData(this.ipagination.current)         // 刷新主table当前页
         }).catch(err => {
           this.$message.error(`${err}`)
         })
@@ -411,7 +416,8 @@
             rowObj['nodeNum'] = resp.enternodes              // 节点数
             rowObj['dataFileNo'] = resp.dataFileNo           // 电网数据文件编号
             rowObj['netFileName'] = resp.netFileName       // 电网文件名称
-            rowObj['calcState'] = this.formatCalcStatusStr(resp.calstas)            // 计算状态
+            rowObj['calcState'] = resp.calstas              // 计算状态（int）
+            rowObj['calcStateDesc'] = this.formatCalcStatusStr(resp.calstas)            // 计算状态描述
             rowObj['finishTime'] = this.formatTableTimeStr(resp.endtime, '未完成')   // 完成时间
             rowObj['otherDataFile'] = resp.otherfiles         // 其他数据文件
             rowObj['resultFile'] = resp.resultfiles         // 计算结果文件
@@ -473,11 +479,11 @@
       formatCalcStatusStr(taskType) {
         switch (taskType) {
           case 0:
-            return '计算状态0'
+            return '未计算'
           case 1:
-            return '计算状态1'
+            return '计算中'
           case 2:
-            return '计算状态2'
+            return '计算完成'
           default:
             return taskType + ''
         }
