@@ -73,6 +73,7 @@
             <a-form-item label="规划数据年份">
               <a-input class="modal-input"
                        :defaultValue="planYear"
+                       @change="planYearChange"
                        :disabled="dataType === '运行'" />
 
             </a-form-item>
@@ -85,6 +86,7 @@
             <a-form-item label="规划数据方式">
               <!--              <a-select :v-decorator="['taskType', ctrlOptions.taskType]">-->
               <a-select :defaultValue="planMode"
+                        @change="planModeChange"
                         :disabled="dataType === '运行'">
                 <a-select-option :value="0">
                   大方式
@@ -312,6 +314,12 @@
       selectChanged(value) {
         this.dataSource = this.fileConfigs[value]
       },
+      planYearChange(event) {
+        this.planYear = event.target.value
+      },
+      planModeChange(value) {
+        this.planMode = value
+      },
       close() {
         this.$emit('close')
         this.visible = false
@@ -329,13 +337,13 @@
           tasktype: this.taskType,
         }
 
-        // if (this.dataType === '运行') {    // 运行数据
-        //   this.reqParams['datatype'] = this.dataType
-        //   this.reqParams['sbase'] = this.baseCapacity
-        // } else {
-        //   this.reqParams['planyear'] = this.planYear
-        //   this.reqParams['planmode'] = this.planMode
-        // }
+        if (this.dataType === '运行') {    // 运行数据
+          // this.reqParams['datatype'] = this.dataType
+          // this.reqParams['sbase'] = this.baseCapacity
+        } else {
+          this.reqParams['planyear'] = this.planYear
+          this.reqParams['planmode'] = this.planMode
+        }
 
         params = Object.assign(params, this.reqParams)
 
@@ -438,6 +446,7 @@
         // Object.keys(this.uploadParams).forEach(key => {
         //   form.append(key, this.uploadParams[key])
         // })
+        
         this.uploadFile(form).then(res => {
           if (res.code === 0) {
             this.fileConfigs[this.taskType].some(item => {
